@@ -23,6 +23,45 @@ export async function createBackup(): Promise<BackupFile> {
   };
 }
 
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isValidEmotionRating(value: unknown): boolean {
+  if (!isObject(value)) return false;
+  if (typeof value.emotion !== 'string') return false;
+  if (typeof value.before !== 'number') return false;
+  if (value.after !== null && typeof value.after !== 'number') return false;
+  return true;
+}
+
+function isValidThought(value: unknown): boolean {
+  if (!isObject(value)) return false;
+  if (typeof value.text !== 'string') return false;
+  if (typeof value.isHot !== 'boolean') return false;
+  return true;
+}
+
+function isValidRecord(value: unknown): boolean {
+  if (!isObject(value)) return false;
+  if (value.status !== 'open' && value.status !== 'completed') return false;
+  if (typeof value.situation !== 'string') return false;
+  if (typeof value.createdAt !== 'string') return false;
+  if (typeof value.updatedAt !== 'string') return false;
+  if (typeof value.evidenceFor !== 'string') return false;
+  if (typeof value.evidenceAgainst !== 'string') return false;
+  if (typeof value.balancedThought !== 'string') return false;
+  if (!Array.isArray(value.emotions) || !value.emotions.every(isValidEmotionRating)) return false;
+  if (!Array.isArray(value.thoughts) || !value.thoughts.every(isValidThought)) return false;
+  if (!Array.isArray(value.distortions)) return false;
+  return true;
+}
+
+function isValidCustomEmotion(value: unknown): boolean {
+  if (!isObject(value)) return false;
+  return typeof value.name === 'string';
+}
+
 export function parseBackup(json: string): BackupFile {
   const fail = () => new Error("This file doesn't look like a Thought Records backup.");
   let data: unknown;
@@ -35,6 +74,8 @@ export function parseBackup(json: string): BackupFile {
   const d = data as Record<string, unknown>;
   if (d.app !== 'thought-records' || d.version !== 1) throw fail();
   if (!Array.isArray(d.records) || !Array.isArray(d.customEmotions)) throw fail();
+  if (!d.records.every(isValidRecord)) throw fail();
+  if (!d.customEmotions.every(isValidCustomEmotion)) throw fail();
   return data as BackupFile;
 }
 

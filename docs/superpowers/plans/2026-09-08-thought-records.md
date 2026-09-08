@@ -689,7 +689,7 @@ git add -A && git commit -m "feat: add domain types, Dexie database and reposito
 
 **Interfaces:**
 - Consumes: `db` from `./db`; `getSetting`, `setSetting` from `./repository`; types from `./types`.
-- Produces: `BackupFile { app: 'thought-records'; version: 1; exportedAt: string; records: ThoughtRecord[]; customEmotions: CustomEmotion[] }`, `createBackup(): Promise<BackupFile>`, `parseBackup(json: string): BackupFile` (throws `Error` with a user-readable message on anything invalid), `restoreBackup(backup: BackupFile): Promise<void>` (REPLACES all records and custom emotions), `downloadBackup(): Promise<void>` (browser download + records `lastExportAt` setting), `shouldNudgeExport(lastExportAt: string | null, newestRecordAt: string | null, now: Date): boolean`. Setting key is the string `'lastExportAt'`.
+- Produces: `BackupFile { app: 'thought-records'; version: 1; exportedAt: string; records: ThoughtRecord[]; customEmotions: CustomEmotion[] }`, `createBackup(): Promise<BackupFile>`, `parseBackup(json: string): BackupFile` (throws `Error` with a user-readable message on anything invalid — including element-level validation of every record and custom emotion, since import destructively replaces data; the reference implementation below shows only envelope checks, but element-level checks are required), `restoreBackup(backup: BackupFile): Promise<void>` (REPLACES all records and custom emotions), `downloadBackup(): Promise<void>` (browser download + records `lastExportAt` setting), `shouldNudgeExport(lastExportAt: string | null, newestRecordAt: string | null, now: Date): boolean`. Setting key is the string `'lastExportAt'`.
 
 - [ ] **Step 1: Write the failing test**
 

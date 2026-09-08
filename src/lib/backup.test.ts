@@ -57,6 +57,87 @@ describe('parseBackup rejects bad input', () => {
     ['wrong app', '{"app":"other","version":1,"exportedAt":"x","records":[],"customEmotions":[]}'],
     ['wrong version', '{"app":"thought-records","version":9,"exportedAt":"x","records":[],"customEmotions":[]}'],
     ['records not array', '{"app":"thought-records","version":1,"exportedAt":"x","records":{},"customEmotions":[]}'],
+    [
+      'record missing situation',
+      JSON.stringify({
+        app: 'thought-records',
+        version: 1,
+        exportedAt: 'x',
+        records: [
+          {
+            status: 'open',
+            createdAt: 'x',
+            updatedAt: 'x',
+            completedAt: null,
+            emotions: [],
+            thoughts: [],
+            evidenceFor: '',
+            evidenceAgainst: '',
+            distortions: [],
+            balancedThought: '',
+          },
+        ],
+        customEmotions: [],
+      }),
+    ],
+    [
+      'record with emotions not an array',
+      JSON.stringify({
+        app: 'thought-records',
+        version: 1,
+        exportedAt: 'x',
+        records: [
+          {
+            status: 'open',
+            createdAt: 'x',
+            updatedAt: 'x',
+            completedAt: null,
+            situation: '',
+            emotions: 'nope',
+            thoughts: [],
+            evidenceFor: '',
+            evidenceAgainst: '',
+            distortions: [],
+            balancedThought: '',
+          },
+        ],
+        customEmotions: [],
+      }),
+    ],
+    [
+      'record with emotion.before as string',
+      JSON.stringify({
+        app: 'thought-records',
+        version: 1,
+        exportedAt: 'x',
+        records: [
+          {
+            status: 'open',
+            createdAt: 'x',
+            updatedAt: 'x',
+            completedAt: null,
+            situation: '',
+            emotions: [{ emotion: 'Anxious', before: '80', after: null }],
+            thoughts: [],
+            evidenceFor: '',
+            evidenceAgainst: '',
+            distortions: [],
+            balancedThought: '',
+          },
+        ],
+        customEmotions: [],
+      }),
+    ],
+    [
+      'customEmotion missing name',
+      JSON.stringify({
+        app: 'thought-records',
+        version: 1,
+        exportedAt: 'x',
+        records: [],
+        customEmotions: [{ id: 1 }],
+      }),
+    ],
   ])('%s', (_name, json) => {
     expect(() => parseBackup(json)).toThrow(/backup/i);
   });
