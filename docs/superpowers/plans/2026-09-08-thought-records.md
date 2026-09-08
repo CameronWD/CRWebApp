@@ -68,7 +68,7 @@
 ### Task 1: Project scaffold, Tailwind theme, test harness
 
 **Files:**
-- Create: `package.json`, `index.html`, `vite.config.ts`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`, `src/main.tsx`, `src/App.tsx`, `src/index.css`, `src/test/setup.ts`, `.gitignore`
+- Create: `package.json`, `index.html`, `vite.config.ts`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`, `src/main.tsx`, `src/App.tsx`, `src/index.css`, `src/vite-env.d.ts`, `src/test/setup.ts`, `.gitignore`
 - Test: `src/test/app.test.tsx`
 
 **Interfaces:**
@@ -123,10 +123,9 @@ dev-dist
 </html>
 ```
 
-`vite.config.ts`:
+`vite.config.ts` (note: `defineConfig` comes from `vitest/config`, which passes through to Vite and types the `test` field):
 ```ts
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
@@ -138,6 +137,11 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
   },
 });
+```
+
+`src/vite-env.d.ts`:
+```ts
+/// <reference types="vite/client" />
 ```
 
 `tsconfig.json`:
@@ -3347,8 +3351,7 @@ Expected: PNG icons appear in `public/` (do not delete them — they get committ
 
 `vite.config.ts` (full replacement):
 ```ts
-/// <reference types="vitest" />
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
