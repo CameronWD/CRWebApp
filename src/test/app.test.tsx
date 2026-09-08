@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import App from '../App';
 
-test('renders the app name', () => {
+test('renders the home screen', async () => {
   render(<App />);
-  expect(screen.getByText('Thought Records')).toBeInTheDocument();
+  expect(await screen.findByText('Thought Records')).toBeInTheDocument();
 });
