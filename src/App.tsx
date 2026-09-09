@@ -3,6 +3,7 @@ import HomeScreen from './screens/HomeScreen';
 import WizardScreen from './screens/WizardScreen';
 import RecordListScreen from './screens/RecordListScreen';
 import RecordDetailScreen from './screens/RecordDetailScreen';
+import SettingsScreen from './screens/SettingsScreen';
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="/edit/:id" element={<WizardScreen mode="edit" />} />
           <Route path="/records" element={<RecordListScreen />} />
           <Route path="/record/:id" element={<RecordDetailScreen />} />
+          <Route path="/settings" element={<SettingsScreen />} />
         </Routes>
       </div>
     </HashRouter>
