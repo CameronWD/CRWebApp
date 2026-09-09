@@ -40,7 +40,7 @@ The realistic, believable reframe that accounts for both evidence columns. Expli
 _Avoid_: positive thought, reframe (as a noun)
 
 **Theme**:
-One of four calming, low-saturation colour palettes (Sage, Dusk, Ocean, Sand) the whole app renders in; chosen in Settings, each with light and dark variants. Sage is the default.
+One of four calming, low-saturation colour palettes (Sage, Dusk, Ocean, Sand) the whole app renders in; chosen in Settings, each with light and dark variants. Sage is the default. Stored on-device in localStorage (not in backups) — a device preference, like the thinking-pattern toggle which lives in the settings table; neither travels with an exported backup.
 _Avoid_: skin, colour scheme
 
 ## Example dialogue

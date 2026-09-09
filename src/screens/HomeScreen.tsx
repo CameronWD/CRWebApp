@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -15,13 +15,12 @@ export default function HomeScreen() {
   const openOldestFirst = [...open].reverse();
   const hasAny = open.length > 0 || completed.length > 0;
 
-  // Open the page anchored at the bottom, chat-style, once records first load.
-  const scrolled = useRef(false);
-  useEffect(() => {
-    if (scrolled.current || !hasAny) return;
-    scrolled.current = true;
+  // Open the page anchored at the bottom, chat-style, re-anchoring as the two
+  // record queries stream in so we don't latch onto a half-populated feed.
+  useLayoutEffect(() => {
+    if (!hasAny) return;
     window.scrollTo(0, document.body.scrollHeight);
-  }, [hasAny]);
+  }, [open.length, completed.length, hasAny]);
 
   return (
     <div className="flex min-h-screen flex-col gap-8 pb-44 pt-4">
@@ -41,37 +40,39 @@ export default function HomeScreen() {
         </p>
       )}
 
-      <div className="mt-auto flex flex-col gap-8">
-        {recent.length > 0 && (
-          <section className="flex flex-col gap-3">
-            <div className="flex items-baseline justify-between">
+      {hasAny && (
+        <div className="mt-auto flex flex-col gap-8">
+          {recent.length > 0 && (
+            <section className="flex flex-col gap-3">
+              <div className="flex items-baseline justify-between">
+                <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">
+                  Recent
+                </h2>
+                <Link to="/records" className="text-sm text-sage-deep dark:text-sage">
+                  See all
+                </Link>
+              </div>
+              {recent.map((r) => (
+                <RecordCard key={r.id} record={r} />
+              ))}
+            </section>
+          )}
+
+          {openOldestFirst.length > 0 && (
+            <section className="flex flex-col gap-3">
               <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">
-                Recent
+                To finish
               </h2>
-              <Link to="/records" className="text-sm text-sage-deep dark:text-sage">
-                See all
-              </Link>
-            </div>
-            {recent.map((r) => (
-              <RecordCard key={r.id} record={r} />
-            ))}
-          </section>
-        )}
+              {openOldestFirst.map((r) => (
+                <RecordCard key={r.id} record={r} />
+              ))}
+            </section>
+          )}
 
-        {openOldestFirst.length > 0 && (
-          <section className="flex flex-col gap-3">
-            <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">
-              To finish
-            </h2>
-            {openOldestFirst.map((r) => (
-              <RecordCard key={r.id} record={r} />
-            ))}
-          </section>
-        )}
-
-        <InstallNudge />
-        <ExportNudge />
-      </div>
+          <InstallNudge />
+          <ExportNudge />
+        </div>
+      )}
 
       <div className="fixed inset-x-0 bottom-0 z-10">
         <div className="mx-auto w-full max-w-md bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-8 pt-6 dark:from-night-bg dark:via-night-bg">

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { HashRouter } from 'react-router-dom';
-import { beforeEach, expect, test } from 'vitest';
+import { beforeEach, expect, test, vi } from 'vitest';
 import { db } from '../lib/db';
 import { completeRecord, newRecord, saveRecord } from '../lib/repository';
 import HomeScreen from './HomeScreen';
@@ -8,6 +8,7 @@ import HomeScreen from './HomeScreen';
 beforeEach(async () => {
   await db.records.clear();
   await db.settings.clear();
+  vi.mocked(window.scrollTo).mockClear();
 });
 
 function renderHome() {
@@ -75,4 +76,20 @@ test('completed section sits above open records, and records run oldest to newes
   const older = await screen.findByText(/older open/);
   const newer = await screen.findByText(/newer open/);
   expect(older.compareDocumentPosition(newer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});
+
+test('anchors scroll to the bottom once both open and completed records have loaded', async () => {
+  const open = newRecord();
+  open.situation = 'An open one';
+  await saveRecord(open);
+  const completed = newRecord();
+  completed.situation = 'A completed one';
+  await saveRecord(completed);
+  await completeRecord(completed);
+
+  renderHome();
+
+  expect(await screen.findByText(/An open one/)).toBeInTheDocument();
+  expect(await screen.findByText(/A completed one/)).toBeInTheDocument();
+  expect(vi.mocked(window.scrollTo)).toHaveBeenCalled();
 });

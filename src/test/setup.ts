@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest';
 import 'fake-indexeddb/auto';
+import { vi } from 'vitest';
 
 // jsdom has no matchMedia; framer-motion and dark-mode checks need a stub.
 if (!window.matchMedia) {
@@ -17,4 +18,4 @@ if (!window.matchMedia) {
 }
 
 // jsdom doesn't implement scrolling; HomeScreen scrolls to the bottom on load.
-window.scrollTo = (() => {}) as typeof window.scrollTo;
+window.scrollTo = vi.fn() as unknown as typeof window.scrollTo;
