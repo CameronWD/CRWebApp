@@ -61,3 +61,19 @@ test('autosaves the record when moving between steps', async () => {
   expect(records).toHaveLength(1);
   expect(records[0].situation).toBe('Missed the bus');
 });
+
+test('repeated autosaves across multiple step transitions update in place, not duplicate', async () => {
+  renderNewWizard();
+  await userEvent.type(await screen.findByRole('textbox'), 'Missed the bus');
+  await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+  expect(await screen.findByText('What are you feeling?')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Anxious' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+  expect(await screen.findByText('What went through your mind?')).toBeInTheDocument();
+
+  const records = await db.records.toArray();
+  expect(records).toHaveLength(1);
+  expect(records[0].situation).toBe('Missed the bus');
+});

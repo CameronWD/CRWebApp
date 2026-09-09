@@ -31,8 +31,9 @@ export default function Wizard({
   useEffect(() => {
     if (prevStepIndex.current === state.stepIndex) return;
     prevStepIndex.current = state.stepIndex;
+    const needsId = state.record.id === undefined;
     void saveRecord(state.record).then((id) => {
-      if (state.record.id === undefined) dispatch({ type: 'patch', fields: { id } });
+      if (needsId) dispatch({ type: 'patch', fields: { id } });
     });
   }, [state.stepIndex, state.record]);
 
