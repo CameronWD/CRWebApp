@@ -14,7 +14,7 @@ export default function RecordListScreen() {
         <section className="flex flex-col gap-3">
           <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">To finish</h2>
           {open.map((r) => (
-            <RecordCard key={r.id} record={r} />
+            <RecordCard key={r.id} record={r} openTo="detail" />
           ))}
         </section>
       )}

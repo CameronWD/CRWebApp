@@ -15,8 +15,17 @@ export function EmotionSummary({ rating }: { rating: EmotionRating }) {
   );
 }
 
-export function RecordCard({ record }: { record: ThoughtRecord }) {
-  const to = record.status === 'open' ? `/complete/${record.id}` : `/record/${record.id}`;
+export function RecordCard({
+  record,
+  openTo = 'wizard',
+}: {
+  record: ThoughtRecord;
+  openTo?: 'wizard' | 'detail';
+}) {
+  const to =
+    record.status === 'open' && openTo === 'wizard'
+      ? `/complete/${record.id}`
+      : `/record/${record.id}`;
   return (
     <motion.div whileTap={{ scale: 0.98 }}>
       <Link
