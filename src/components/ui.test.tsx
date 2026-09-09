@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, test, vi } from 'vitest';
-import { Button, Chip, ConfirmSheet, IntensitySlider } from './ui';
+import { Button, Chip, ConfirmSheet, IntensitySlider, Switch } from './ui';
 
 test('Button fires onClick and respects disabled', async () => {
   const onClick = vi.fn();
@@ -40,4 +40,13 @@ test('ConfirmSheet renders only when open and wires both buttons', async () => {
   expect(onConfirm).toHaveBeenCalledOnce();
   await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
   expect(onCancel).toHaveBeenCalledOnce();
+});
+
+test('Switch reflects and toggles its state', async () => {
+  const onChange = vi.fn();
+  render(<Switch checked={false} onChange={onChange} label="Name the thinking pattern" />);
+  const sw = screen.getByRole('switch', { name: /Name the thinking pattern/ });
+  expect(sw).toHaveAttribute('aria-checked', 'false');
+  await userEvent.click(sw);
+  expect(onChange).toHaveBeenCalledWith(true);
 });

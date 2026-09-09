@@ -223,3 +223,45 @@ export function ConfirmSheet({
     </AnimatePresence>
   );
 }
+
+export function Switch({
+  checked,
+  onChange,
+  label,
+  description,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label: string;
+  description?: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className="flex w-full items-center justify-between gap-4 rounded-2xl bg-surface p-4 text-left shadow-sm dark:bg-night-surface"
+    >
+      <span className="min-w-0">
+        <span className="block text-sm font-medium">{label}</span>
+        {description && (
+          <span className="mt-0.5 block text-xs leading-relaxed text-mist dark:text-night-mist">
+            {description}
+          </span>
+        )}
+      </span>
+      <span
+        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
+          checked ? 'bg-sage-deep dark:bg-sage' : 'bg-sage-soft dark:bg-night-bg'
+        }`}
+      >
+        <span
+          className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all dark:bg-night-ink ${
+            checked ? 'left-6' : 'left-1'
+          }`}
+        />
+      </span>
+    </button>
+  );
+}

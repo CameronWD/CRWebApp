@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { downloadBackup, getLastExportAt, parseBackup, restoreBackup, type BackupFile } from '../lib/backup';
-import { listCustomEmotions, removeCustomEmotion } from '../lib/repository';
+import { getSetting, setSetting, listCustomEmotions, removeCustomEmotion } from '../lib/repository';
 import { formatRelative } from '../lib/format';
-import { Button, ConfirmSheet } from '../components/ui';
+import { Button, ConfirmSheet, Switch } from '../components/ui';
+import ThemePicker from '../components/ThemePicker';
 
 export default function SettingsScreen() {
   const lastExport = useLiveQuery(getLastExportAt, [], null);
@@ -14,6 +15,16 @@ export default function SettingsScreen() {
   const [error, setError] = useState<string | null>(null);
   const [exported, setExported] = useState(false);
   const [imported, setImported] = useState(false);
+  const [namePatterns, setNamePatterns] = useState(false);
+
+  useEffect(() => {
+    void getSetting('namePatterns').then((v) => setNamePatterns(v === '1'));
+  }, []);
+
+  const togglePatterns = (on: boolean) => {
+    setNamePatterns(on);
+    void setSetting('namePatterns', on ? '1' : '0');
+  };
 
   const onFile = async (file: File) => {
     setError(null);
@@ -46,6 +57,21 @@ export default function SettingsScreen() {
         </Link>
         <h1 className="font-display text-xl font-medium">Settings</h1>
       </header>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">Theme</h2>
+        <ThemePicker />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">Preferences</h2>
+        <Switch
+          checked={namePatterns}
+          onChange={togglePatterns}
+          label="Name the thinking pattern"
+          description="Adds a step to tag thinking traps like catastrophising."
+        />
+      </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">Backup</h2>

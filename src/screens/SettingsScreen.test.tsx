@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HashRouter } from 'react-router-dom';
 import { beforeEach, expect, test } from 'vitest';
 import { db } from '../lib/db';
-import { addCustomEmotion, listCustomEmotions, newRecord, saveRecord } from '../lib/repository';
+import { addCustomEmotion, getSetting, listCustomEmotions, newRecord, saveRecord } from '../lib/repository';
 import type { BackupFile } from '../lib/backup';
 import SettingsScreen from './SettingsScreen';
 
@@ -11,6 +11,8 @@ beforeEach(async () => {
   await db.records.clear();
   await db.customEmotions.clear();
   await db.settings.clear();
+  localStorage.clear();
+  delete document.documentElement.dataset.theme;
 });
 
 function renderSettings() {
@@ -82,4 +84,24 @@ test('importing a garbage file shows an error and leaves data untouched', async 
   const records = await db.records.toArray();
   expect(records).toHaveLength(1);
   expect(records[0].situation).toBe('stays put');
+});
+
+test('theme picker switches and persists the theme', async () => {
+  renderSettings();
+  const dusk = await screen.findByRole('button', { name: /Dusk/ });
+  await userEvent.click(dusk);
+  expect(document.documentElement.dataset.theme).toBe('dusk');
+  expect(localStorage.getItem('theme')).toBe('dusk');
+  expect(dusk).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('thinking-pattern toggle is off by default and persists when turned on', async () => {
+  renderSettings();
+  const sw = await screen.findByRole('switch', { name: /Name the thinking pattern/ });
+  expect(sw).toHaveAttribute('aria-checked', 'false');
+  await userEvent.click(sw);
+  expect(sw).toHaveAttribute('aria-checked', 'true');
+  await waitFor(async () => {
+    expect(await getSetting('namePatterns')).toBe('1');
+  });
 });
