@@ -62,6 +62,14 @@ test('autosaves the record when moving between steps', async () => {
   expect(records[0].situation).toBe('Missed the bus');
 });
 
+test('double-clicking Close on an unsaved record does not create two records', async () => {
+  renderNewWizard();
+  await userEvent.type(await screen.findByRole('textbox'), 'Missed the bus');
+  const close = screen.getByRole('button', { name: 'Close' });
+  await userEvent.dblClick(close);
+  expect(await db.records.toArray()).toHaveLength(1);
+});
+
 test('repeated autosaves across multiple step transitions update in place, not duplicate', async () => {
   renderNewWizard();
   await userEvent.type(await screen.findByRole('textbox'), 'Missed the bus');

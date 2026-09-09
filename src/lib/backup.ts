@@ -53,13 +53,17 @@ function isValidRecord(value: unknown): boolean {
   if (typeof value.balancedThought !== 'string') return false;
   if (!Array.isArray(value.emotions) || !value.emotions.every(isValidEmotionRating)) return false;
   if (!Array.isArray(value.thoughts) || !value.thoughts.every(isValidThought)) return false;
-  if (!Array.isArray(value.distortions)) return false;
+  if (!Array.isArray(value.distortions) || !value.distortions.every((d) => typeof d === 'string')) return false;
+  if (value.completedAt !== null && typeof value.completedAt !== 'string') return false;
+  if ('id' in value && typeof value.id !== 'number') return false;
   return true;
 }
 
 function isValidCustomEmotion(value: unknown): boolean {
   if (!isObject(value)) return false;
-  return typeof value.name === 'string';
+  if (typeof value.name !== 'string') return false;
+  if ('id' in value && typeof value.id !== 'number') return false;
+  return true;
 }
 
 export function parseBackup(json: string): BackupFile {
@@ -95,8 +99,10 @@ export async function downloadBackup(): Promise<void> {
   const a = document.createElement('a');
   a.href = url;
   a.download = `thought-records-${backup.exportedAt.slice(0, 10)}.json`;
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30_000);
   await setSetting(LAST_EXPORT_KEY, backup.exportedAt);
 }
 

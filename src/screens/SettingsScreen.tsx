@@ -13,6 +13,7 @@ export default function SettingsScreen() {
   const [pending, setPending] = useState<BackupFile | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [exported, setExported] = useState(false);
+  const [imported, setImported] = useState(false);
 
   const onFile = async (file: File) => {
     setError(null);
@@ -25,8 +26,14 @@ export default function SettingsScreen() {
 
   const doImport = async () => {
     if (!pending) return;
-    await restoreBackup(pending);
-    setPending(null);
+    try {
+      await restoreBackup(pending);
+      setImported(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not import that backup.');
+    } finally {
+      setPending(null);
+    }
   };
 
   return (
@@ -47,7 +54,12 @@ export default function SettingsScreen() {
         </p>
         <Button
           onClick={() => {
-            void downloadBackup().then(() => setExported(true));
+            setError(null);
+            downloadBackup()
+              .then(() => setExported(true))
+              .catch((e: unknown) => {
+                setError(e instanceof Error ? e.message : 'Could not export a backup.');
+              });
           }}
         >
           Export backup
@@ -74,6 +86,7 @@ export default function SettingsScreen() {
             e.target.value = '';
           }}
         />
+        {imported && <p className="text-xs text-mist dark:text-night-mist">Backup imported.</p>}
         {error && <p className="text-xs text-red-800/80 dark:text-red-400/80">{error}</p>}
       </section>
 

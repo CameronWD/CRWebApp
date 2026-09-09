@@ -30,6 +30,7 @@ export default function Wizard({
   const navigate = useNavigate();
   const [state, dispatch] = useReducer(wizardReducer, initWizard(initialRecord, mode));
   const step = currentStep(state);
+  const exiting = useRef(false);
 
   // Autosave whenever the step index changes (not on every keystroke).
   const prevStepIndex = useRef(state.stepIndex);
@@ -55,6 +56,8 @@ export default function Wizard({
   };
 
   const exit = async () => {
+    if (exiting.current) return;
+    exiting.current = true;
     const worthKeeping = state.record.id !== undefined || state.record.situation.trim() !== '';
     if (worthKeeping) await saveRecord(state.record);
     navigate('/');

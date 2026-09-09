@@ -23,10 +23,17 @@ export default function RecordDetailScreen() {
   const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
-    void getRecord(Number(id)).then((r) => {
-      if (r) setRecord(r);
-      else navigate('/');
-    });
+    const n = Number(id);
+    if (!Number.isInteger(n)) {
+      navigate('/');
+      return;
+    }
+    void getRecord(n)
+      .then((r) => {
+        if (r) setRecord(r);
+        else navigate('/');
+      })
+      .catch(() => navigate('/'));
   }, [id, navigate]);
 
   if (!record) return null;

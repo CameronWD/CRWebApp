@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { db } from './db';
-import { createBackup, parseBackup, restoreBackup, shouldNudgeExport } from './backup';
-import { addCustomEmotion, listCustomEmotions, newRecord, saveRecord } from './repository';
+import { createBackup, downloadBackup, parseBackup, restoreBackup, shouldNudgeExport } from './backup';
+import { addCustomEmotion, getSetting, listCustomEmotions, newRecord, saveRecord } from './repository';
 
 beforeEach(async () => {
   await db.records.clear();
@@ -47,6 +47,32 @@ describe('backup round trip', () => {
     const backup = await createBackup();
     const parsed = parseBackup(JSON.stringify(backup));
     expect(parsed.version).toBe(1);
+  });
+});
+
+describe('downloadBackup', () => {
+  test('triggers a download and records the export time', async () => {
+    URL.createObjectURL = vi.fn(() => 'blob:test');
+    URL.revokeObjectURL = vi.fn();
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    const appendSpy = vi.spyOn(document.body, 'appendChild');
+
+    const r = newRecord();
+    r.situation = 'test';
+    await saveRecord(r);
+
+    await downloadBackup();
+
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+    const anchor = appendSpy.mock.calls
+      .map((call) => call[0])
+      .find((node): node is HTMLAnchorElement => node instanceof HTMLAnchorElement);
+    expect(anchor).toBeDefined();
+    expect(anchor!.download).toMatch(/^thought-records-\d{4}-\d{2}-\d{2}\.json$/);
+    expect(await getSetting('lastExportAt')).not.toBeNull();
+
+    clickSpy.mockRestore();
+    appendSpy.mockRestore();
   });
 });
 
@@ -136,6 +162,54 @@ describe('parseBackup rejects bad input', () => {
         exportedAt: 'x',
         records: [],
         customEmotions: [{ id: 1 }],
+      }),
+    ],
+    [
+      'record with distortions not strings',
+      JSON.stringify({
+        app: 'thought-records',
+        version: 1,
+        exportedAt: 'x',
+        records: [
+          {
+            status: 'open',
+            createdAt: 'x',
+            updatedAt: 'x',
+            completedAt: null,
+            situation: '',
+            emotions: [],
+            thoughts: [],
+            evidenceFor: '',
+            evidenceAgainst: '',
+            distortions: [{}],
+            balancedThought: '',
+          },
+        ],
+        customEmotions: [],
+      }),
+    ],
+    [
+      'record with completedAt as a number',
+      JSON.stringify({
+        app: 'thought-records',
+        version: 1,
+        exportedAt: 'x',
+        records: [
+          {
+            status: 'open',
+            createdAt: 'x',
+            updatedAt: 'x',
+            completedAt: 5,
+            situation: '',
+            emotions: [],
+            thoughts: [],
+            evidenceFor: '',
+            evidenceAgainst: '',
+            distortions: [],
+            balancedThought: '',
+          },
+        ],
+        customEmotions: [],
       }),
     ],
   ])('%s', (_name, json) => {

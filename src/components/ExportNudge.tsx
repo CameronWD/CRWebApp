@@ -11,8 +11,10 @@ export default function ExportNudge() {
   const show = useLiveQuery(
     async () => {
       const lastExport = await getLastExportAt();
-      const newest = await db.records.orderBy('createdAt').last();
-      return shouldNudgeExport(lastExport, newest?.createdAt ?? null, new Date());
+      // updatedAt (not createdAt) drives the nudge so edits to existing
+      // records — not just brand-new ones — count as "something to back up".
+      const newest = await db.records.orderBy('updatedAt').last();
+      return shouldNudgeExport(lastExport, newest?.updatedAt ?? null, new Date());
     },
     [],
     false,

@@ -1,5 +1,5 @@
 import { useState, type Dispatch } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import type { ThoughtRecord } from '../../lib/types';
 import type { WizardAction } from '../../lib/wizard';
 import { StepShell } from '../../components/ui';
@@ -12,6 +12,7 @@ export default function ThoughtsStep({
   dispatch: Dispatch<WizardAction>;
 }) {
   const [draft, setDraft] = useState('');
+  const reduceMotion = useReducedMotion();
 
   const add = () => {
     dispatch({ type: 'addThought', text: draft });
@@ -50,8 +51,8 @@ export default function ThoughtsStep({
         {record.thoughts.map((t, i) => (
           <motion.div
             key={`${i}-${t.text}`}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+            animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
             className={`flex items-center gap-3 rounded-2xl p-4 shadow-sm transition-colors ${
               t.isHot
                 ? 'bg-sage-deep text-white dark:bg-sage dark:text-night-bg'

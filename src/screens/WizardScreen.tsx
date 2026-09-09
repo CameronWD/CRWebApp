@@ -15,10 +15,17 @@ export default function WizardScreen({ mode }: { mode: WizardMode }) {
       setRecord(newRecord());
       return;
     }
-    void getRecord(Number(id)).then((r) => {
-      if (r) setRecord(r);
-      else navigate('/');
-    });
+    const n = Number(id);
+    if (!Number.isInteger(n)) {
+      navigate('/');
+      return;
+    }
+    void getRecord(n)
+      .then((r) => {
+        if (r) setRecord(r);
+        else navigate('/');
+      })
+      .catch(() => navigate('/'));
   }, [mode, id, navigate]);
 
   if (!record) return null;

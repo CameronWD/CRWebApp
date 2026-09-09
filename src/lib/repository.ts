@@ -55,7 +55,10 @@ export async function listOpenRecords(): Promise<ThoughtRecord[]> {
 }
 
 export async function listCompletedRecords(): Promise<ThoughtRecord[]> {
-  return newestFirst(await db.records.where('status').equals('completed').toArray());
+  const records = await db.records.where('status').equals('completed').toArray();
+  return [...records].sort((a, b) =>
+    (b.completedAt ?? b.createdAt).localeCompare(a.completedAt ?? a.createdAt),
+  );
 }
 
 export function hotThought(record: ThoughtRecord): string {

@@ -13,6 +13,9 @@ export class ThoughtDb extends Dexie {
       customEmotions: '++id, &name',
       settings: '&key',
     });
+    this.version(2).stores({
+      records: '++id, status, createdAt, updatedAt',
+    });
   }
 }
 

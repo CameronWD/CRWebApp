@@ -48,6 +48,11 @@ test('shows every section of a completed record', async () => {
   expect(screen.getByRole('link', { name: 'Edit' })).toBeInTheDocument();
 });
 
+test('a non-numeric id redirects home instead of hanging blank', async () => {
+  renderDetail(NaN);
+  expect(await screen.findByText('home')).toBeInTheDocument();
+});
+
 test('open records offer Continue instead of Edit', async () => {
   const r = newRecord();
   r.situation = 'Half captured';

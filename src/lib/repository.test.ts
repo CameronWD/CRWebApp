@@ -77,6 +77,26 @@ describe('records', () => {
     expect(completed.map((r) => r.id)).toEqual([c.id]);
   });
 
+  test('listCompletedRecords orders by completedAt, not createdAt', async () => {
+    // d was created after e, but completed before it — completedAt should win.
+    const d = newRecord();
+    d.createdAt = '2026-03-01T10:00:00.000Z';
+    await saveRecord(d);
+    d.status = 'completed';
+    d.completedAt = '2026-03-05T10:00:00.000Z';
+    await saveRecord(d);
+
+    const e = newRecord();
+    e.createdAt = '2026-03-02T10:00:00.000Z';
+    await saveRecord(e);
+    e.status = 'completed';
+    e.completedAt = '2026-03-10T10:00:00.000Z';
+    await saveRecord(e);
+
+    const completed = await listCompletedRecords();
+    expect(completed.map((r) => r.id)).toEqual([e.id, d.id]);
+  });
+
   test('deleteRecord removes the record', async () => {
     const r = newRecord();
     const id = await saveRecord(r);

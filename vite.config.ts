@@ -9,6 +9,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       pwaAssets: { config: true },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,woff2,png,svg,ico}'],
+      },
       manifest: {
         name: 'Thought Records',
         short_name: 'Thoughts',
