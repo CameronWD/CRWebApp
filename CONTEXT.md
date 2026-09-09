@@ -39,6 +39,10 @@ _Avoid_: bias, fallacy
 The realistic, believable reframe that accounts for both evidence columns. Explicitly not forced positivity.
 _Avoid_: positive thought, reframe (as a noun)
 
+**Theme**:
+One of four calming, low-saturation colour palettes (Sage, Dusk, Ocean, Sand) the whole app renders in; chosen in Settings, each with light and dark variants. Sage is the default.
+_Avoid_: skin, colour scheme
+
 ## Example dialogue
 
 > **Dev:** So an entry has one emotion?
