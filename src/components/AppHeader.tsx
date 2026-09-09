@@ -25,12 +25,26 @@ export default function AppHeader({
   );
 }
 
+function ChevronLeft() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  );
+}
+
+export function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} aria-label="Back" className="-ml-2 p-2 text-mist dark:text-night-mist">
+      <ChevronLeft />
+    </button>
+  );
+}
+
 export function BackLink({ to = '/' }: { to?: string }) {
   return (
     <Link to={to} aria-label="Back" className="-ml-2 p-2 text-mist dark:text-night-mist">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M15 18l-6-6 6-6" />
-      </svg>
+      <ChevronLeft />
     </Link>
   );
 }

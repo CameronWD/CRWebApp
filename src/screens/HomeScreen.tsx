@@ -24,7 +24,7 @@ export default function HomeScreen() {
   }, [open.length, completed.length, hasAny]);
 
   return (
-    <div className="flex min-h-screen flex-col gap-8 pb-44">
+    <div className="flex min-h-svh flex-col gap-8 pb-[calc(11rem+env(safe-area-inset-bottom))]">
       <AppHeader
         title="Thought Records"
         right={
@@ -77,7 +77,7 @@ export default function HomeScreen() {
         </div>
       )}
 
-      <div className="fixed inset-x-0 bottom-0 z-10">
+      <div className="fixed inset-x-0 bottom-0 z-30">
         <div className="mx-auto w-full max-w-md bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 dark:from-night-bg dark:via-night-bg">
           <motion.div whileTap={{ scale: 0.98 }}>
             <Link

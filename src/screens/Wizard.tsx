@@ -10,6 +10,7 @@ import {
 } from '../lib/wizard';
 import { saveRecord } from '../lib/repository';
 import { Button, ProgressDots } from '../components/ui';
+import { BackButton } from '../components/AppHeader';
 import SituationStep from './steps/SituationStep';
 import EmotionsStep from './steps/EmotionsStep';
 import ThoughtsStep from './steps/ThoughtsStep';
@@ -78,14 +79,10 @@ export default function Wizard({
   const showFooter = showChrome && step !== 'fork';
 
   return (
-    <div className="flex min-h-screen flex-col pt-4">
+    <div className="flex min-h-svh flex-col pt-[max(1rem,env(safe-area-inset-top))]">
       {showChrome && (
         <header className="mb-6 flex items-center justify-between">
-          <button type="button" onClick={handleBack} aria-label="Back" className="p-2 text-mist dark:text-night-mist">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
+          <BackButton onClick={handleBack} />
           <ProgressDots current={Math.min(state.stepIndex, dotsTotal - 1)} total={dotsTotal} />
           <button type="button" onClick={() => void exit()} aria-label="Close" className="p-2 text-mist dark:text-night-mist">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -114,7 +111,7 @@ export default function Wizard({
       </div>
 
       {showFooter && (
-        <footer className="sticky bottom-0 -mx-5 bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-4 dark:from-night-bg dark:via-night-bg">
+        <footer className="sticky bottom-0 z-20 -mx-5 bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-4 dark:from-night-bg dark:via-night-bg">
           <Button
             onClick={handleNext}
             disabled={!canProceed(state)}

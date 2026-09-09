@@ -26,3 +26,14 @@ test('all four theme blocks declare an identical set of 13 tokens', () => {
     expect(tokensOf(block)).toEqual(reference);
   }
 });
+
+test('pinned chrome carries safe-area inset utilities', () => {
+  const srcDir = dirname(fileURLToPath(import.meta.url));
+  const home = readFileSync(resolve(srcDir, '../screens/HomeScreen.tsx'), 'utf8');
+  const wizard = readFileSync(resolve(srcDir, '../screens/Wizard.tsx'), 'utf8');
+  const header = readFileSync(resolve(srcDir, '../components/AppHeader.tsx'), 'utf8');
+  expect(home).toContain('pb-[max(2rem,env(safe-area-inset-bottom))]');
+  expect(wizard).toContain('pb-[max(2rem,env(safe-area-inset-bottom))]');
+  expect(wizard).toContain('pt-[max(1rem,env(safe-area-inset-top))]');
+  expect(header).toContain('pt-[max(1rem,env(safe-area-inset-top))]');
+});

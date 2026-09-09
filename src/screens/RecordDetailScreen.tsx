@@ -6,7 +6,7 @@ import { deleteRecord, getRecord } from '../lib/repository';
 import { formatFullDate } from '../lib/format';
 import { ConfirmSheet } from '../components/ui';
 import { EmotionSummary } from '../components/RecordCard';
-import AppHeader from '../components/AppHeader';
+import AppHeader, { BackButton } from '../components/AppHeader';
 
 function Section({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -47,13 +47,7 @@ export default function RecordDetailScreen() {
   return (
     <div className="flex flex-col gap-6 pb-10">
       <AppHeader
-        left={
-          <button type="button" onClick={() => navigate(-1)} aria-label="Back" className="-ml-2 p-2 text-mist dark:text-night-mist">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-        }
+        left={<BackButton onClick={() => navigate(-1)} />}
         right={
           <Link
             to={record.status === 'open' ? `/complete/${record.id}` : `/edit/${record.id}`}
