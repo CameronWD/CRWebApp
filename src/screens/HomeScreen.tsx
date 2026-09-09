@@ -63,9 +63,16 @@ export default function HomeScreen() {
 
           {openOldestFirst.length > 0 && (
             <section className="flex flex-col gap-3">
-              <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">
-                To finish
-              </h2>
+              <div className="flex items-baseline justify-between">
+                <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">
+                  To finish
+                </h2>
+                {recent.length === 0 && (
+                  <Link to="/records" className="text-sm text-sage-deep dark:text-sage">
+                    See all
+                  </Link>
+                )}
+              </div>
               {openOldestFirst.map((r) => (
                 <RecordCard key={r.id} record={r} />
               ))}

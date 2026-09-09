@@ -78,6 +78,20 @@ test('completed section sits above open records, and records run oldest to newes
   expect(older.compareDocumentPosition(newer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });
 
+test('To finish cards link to the completion wizard, and See all appears when there is nothing Recent', async () => {
+  const r = newRecord();
+  r.situation = 'Argument at work';
+  await saveRecord(r);
+  renderHome();
+
+  const situation = await screen.findByText(/Argument at work/);
+  const link = situation.closest('a');
+  expect(link).toHaveAttribute('href', `#/complete/${r.id}`);
+
+  const seeAll = screen.getByRole('link', { name: 'See all' });
+  expect(seeAll).toHaveAttribute('href', '#/records');
+});
+
 test('anchors scroll to the bottom once both open and completed records have loaded', async () => {
   const open = newRecord();
   open.situation = 'An open one';

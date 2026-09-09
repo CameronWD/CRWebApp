@@ -71,3 +71,15 @@ test('delete asks for confirmation then removes the record', async () => {
   expect(await screen.findByText('home')).toBeInTheDocument();
   expect(await db.records.count()).toBe(0);
 });
+
+test('an open record can also be deleted', async () => {
+  const r = newRecord();
+  r.situation = 'Half captured';
+  await saveRecord(r);
+  renderDetail(r.id!);
+  await userEvent.click(await screen.findByRole('button', { name: 'Delete' }));
+  expect(screen.getByText('Delete this record?')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Delete record' }));
+  expect(await screen.findByText('home')).toBeInTheDocument();
+  expect(await db.records.count()).toBe(0);
+});
