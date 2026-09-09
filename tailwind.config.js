@@ -5,24 +5,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        paper: '#FAF8F4',
-        surface: '#FFFFFF',
-        ink: '#2F3634',
-        mist: '#6B7572',
+        paper: 'rgb(var(--c-paper) / <alpha-value>)',
+        surface: 'rgb(var(--c-surface) / <alpha-value>)',
+        ink: 'rgb(var(--c-ink) / <alpha-value>)',
+        mist: 'rgb(var(--c-mist) / <alpha-value>)',
         sage: {
-          DEFAULT: '#7C9885',
-          deep: '#5F7D6A',
-          soft: '#E5EDE7',
+          DEFAULT: 'rgb(var(--c-accent) / <alpha-value>)',
+          deep: 'rgb(var(--c-accent-deep) / <alpha-value>)',
+          soft: 'rgb(var(--c-accent-soft) / <alpha-value>)',
         },
         blue: {
-          dusty: '#7A93AC',
-          soft: '#E7EEF4',
+          dusty: 'rgb(var(--c-second) / <alpha-value>)',
+          soft: 'rgb(var(--c-second-soft) / <alpha-value>)',
         },
         night: {
-          bg: '#191D1B',
-          surface: '#242927',
-          ink: '#E7E5E0',
-          mist: '#9AA39F',
+          bg: 'rgb(var(--c-night-bg) / <alpha-value>)',
+          surface: 'rgb(var(--c-night-surface) / <alpha-value>)',
+          ink: 'rgb(var(--c-night-ink) / <alpha-value>)',
+          mist: 'rgb(var(--c-night-mist) / <alpha-value>)',
         },
       },
       fontFamily: {

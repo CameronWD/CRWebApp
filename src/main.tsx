@@ -4,6 +4,9 @@ import '@fontsource-variable/inter';
 import '@fontsource-variable/fraunces';
 import './index.css';
 import App from './App';
+import { initTheme } from './lib/themes';
+
+initTheme();
 
 // Ask the browser not to evict our IndexedDB data under storage pressure.
 if (navigator.storage?.persist) void navigator.storage.persist();

@@ -2,6 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme tokens — RGB triplets so Tailwind opacity modifiers keep working. */
+:root {
+  --c-paper: 250 248 244;
+  --c-surface: 255 255 255;
+  --c-ink: 47 54 52;
+  --c-mist: 107 117 114;
+  --c-accent: 124 152 133;
+  --c-accent-deep: 95 125 106;
+  --c-accent-soft: 229 237 231;
+  --c-second: 122 147 172;
+  --c-second-soft: 231 238 244;
+  --c-night-bg: 25 29 27;
+  --c-night-surface: 36 41 39;
+  --c-night-ink: 231 229 224;
+  --c-night-mist: 154 163 159;
+}
+
+:root[data-theme='dusk'] {
+  --c-paper: 247 245 250;
+  --c-surface: 255 255 255;
+  --c-ink: 50 47 59;
+  --c-mist: 111 106 124;
+  --c-accent: 145 135 172;
+  --c-accent-deep: 111 101 144;
+  --c-accent-soft: 234 230 242;
+  --c-second: 167 138 159;
+  --c-second-soft: 242 233 239;
+  --c-night-bg: 27 25 34;
+  --c-night-surface: 38 35 49;
+  --c-night-ink: 230 227 236;
+  --c-night-mist: 160 154 174;
+}
+
+:root[data-theme='ocean'] {
+  --c-paper: 244 247 249;
+  --c-surface: 255 255 255;
+  --c-ink: 44 52 57;
+  --c-mist: 100 115 124;
+  --c-accent: 110 147 165;
+  --c-accent-deep: 74 111 130;
+  --c-accent-soft: 226 236 241;
+  --c-second: 111 160 152;
+  --c-second-soft: 229 240 238;
+  --c-night-bg: 22 28 32;
+  --c-night-surface: 33 41 48;
+  --c-night-ink: 226 231 234;
+  --c-night-mist: 147 163 172;
+}
+
+:root[data-theme='sand'] {
+  --c-paper: 250 246 240;
+  --c-surface: 255 255 255;
+  --c-ink: 58 50 44;
+  --c-mist: 124 113 102;
+  --c-accent: 192 138 110;
+  --c-accent-deep: 143 93 68;
+  --c-accent-soft: 242 229 220;
+  --c-second: 138 151 160;
+  --c-second-soft: 235 239 241;
+  --c-night-bg: 32 27 23;
+  --c-night-surface: 44 38 32;
+  --c-night-ink: 234 229 223;
+  --c-night-mist: 168 156 144;
+}
+
 body {
   @apply bg-paper text-ink font-body antialiased dark:bg-night-bg dark:text-night-ink;
 }
