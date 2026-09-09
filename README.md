@@ -34,8 +34,14 @@ The app is a static site configured for `https://<user>.github.io/CRWebApp/`
 
 ## Design notes
 
-- Calm, minimal, low-stimulation: sage/dusty-blue on warm off-white, automatic
-  dark mode, one question per screen in the wizard.
+- Calm, minimal, low-stimulation: four selectable themes in Settings (Sage,
+  Dusk, Ocean, Sand — all muted, calming palettes), automatic dark mode, one
+  question per screen in the wizard.
 - Two-phase flow: a quick capture saves an "open" record that waits on the home
-  screen; completing the evidence/reframe steps closes it.
+  screen; completing the evidence/reframe steps closes it. Naming the thinking
+  pattern (catastrophising etc.) is an optional step, off by default — enable
+  it under Settings → Preferences.
+- Thumb-first home screen: the New record button is pinned to the bottom of the
+  screen and the feed runs oldest to newest, so the newest records and the
+  button both sit in the thumb zone.
 - Animations respect the system "reduce motion" setting.
