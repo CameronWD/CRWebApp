@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { downloadBackup, getLastExportAt, parseBackup, restoreBackup, type BackupFile } from '../lib/backup';
 import { getSetting, setSetting, listCustomEmotions, removeCustomEmotion } from '../lib/repository';
 import { formatRelative } from '../lib/format';
 import { Button, ConfirmSheet, Switch } from '../components/ui';
 import ThemePicker from '../components/ThemePicker';
+import AppHeader, { BackLink } from '../components/AppHeader';
 
 export default function SettingsScreen() {
   const lastExport = useLiveQuery(getLastExportAt, [], null);
@@ -48,15 +48,8 @@ export default function SettingsScreen() {
   };
 
   return (
-    <div className="flex flex-col gap-8 pt-4 pb-10">
-      <header className="flex items-center gap-3">
-        <Link to="/" aria-label="Back" className="p-2 text-mist dark:text-night-mist">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </Link>
-        <h1 className="font-display text-xl font-medium">Settings</h1>
-      </header>
+    <div className="flex flex-col gap-8 pb-10">
+      <AppHeader title="Settings" left={<BackLink />} />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">Theme</h2>
