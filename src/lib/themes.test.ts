@@ -4,6 +4,7 @@ import { applyTheme, DEFAULT_THEME, initTheme, isThemeId, storedTheme, THEMES } 
 beforeEach(() => {
   localStorage.clear();
   delete document.documentElement.dataset.theme;
+  document.querySelector('meta[name="theme-color"]')?.remove();
 });
 
 test('exactly four themes, sage first', () => {
@@ -32,4 +33,17 @@ test('isThemeId accepts ids and rejects everything else', () => {
   expect(isThemeId('dusk')).toBe(true);
   expect(isThemeId('pink')).toBe(false);
   expect(isThemeId(3)).toBe(false);
+});
+
+test('applyTheme keeps the theme-color meta in step (light scheme)', () => {
+  applyTheme('sand');
+  const meta = document.querySelector('meta[name="theme-color"]');
+  expect(meta?.getAttribute('content')).toBe('#FAF6F0');
+});
+
+test('syncThemeColor creates the meta when missing and initTheme syncs it', () => {
+  localStorage.setItem('theme', 'ocean');
+  initTheme();
+  const meta = document.querySelector('meta[name="theme-color"]');
+  expect(meta?.getAttribute('content')).toBe('#F4F7F9');
 });

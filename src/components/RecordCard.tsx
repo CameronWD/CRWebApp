@@ -15,12 +15,14 @@ export function EmotionSummary({ rating }: { rating: EmotionRating }) {
   );
 }
 
+export type RecordCardTarget = 'wizard' | 'detail';
+
 export function RecordCard({
   record,
   openTo = 'wizard',
 }: {
   record: ThoughtRecord;
-  openTo?: 'wizard' | 'detail';
+  openTo?: RecordCardTarget;
 }) {
   const to =
     record.status === 'open' && openTo === 'wizard'
