@@ -41,7 +41,7 @@ export default function RecordDetailScreen() {
 
   const remove = async () => {
     await deleteRecord(record.id!);
-    navigate('/');
+    navigate('/records');
   };
 
   return (
@@ -60,7 +60,13 @@ export default function RecordDetailScreen() {
 
       <div>
         <p className="text-xs text-mist dark:text-night-mist">{formatFullDate(record.createdAt)}</p>
-        <h1 className="mt-1 font-display text-xl font-medium leading-snug">{record.situation}</h1>
+        {record.situation ? (
+          <h1 className="mt-1 font-display text-xl font-medium leading-snug">{record.situation}</h1>
+        ) : (
+          <h1 className="mt-1 font-display text-xl font-medium italic text-mist dark:text-night-mist">
+            Not written yet
+          </h1>
+        )}
       </div>
 
       {record.emotions.length > 0 && (

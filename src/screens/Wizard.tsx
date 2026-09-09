@@ -61,12 +61,21 @@ export default function Wizard({
     dispatch({ type: 'next' });
   };
 
+  // Return to the page the user came from when there is one; home otherwise.
+  // React Router records an entry index in history.state — 0 means this is
+  // the first in-app page (deep link / fresh install), so back would leave the app.
+  const leave = () => {
+    const idx = (window.history.state as { idx?: number } | null)?.idx;
+    if (typeof idx === 'number' && idx > 0) navigate(-1);
+    else navigate('/');
+  };
+
   const exit = async () => {
     if (exiting.current) return;
     exiting.current = true;
     const worthKeeping = state.record.id !== undefined || state.record.situation.trim() !== '';
     if (worthKeeping) await saveRecord(state.record);
-    navigate('/');
+    leave();
   };
 
   const handleBack = () => {
@@ -99,7 +108,7 @@ export default function Wizard({
             {step === 'emotions' && <EmotionsStep record={state.record} dispatch={dispatch} />}
             {step === 'thoughts' && <ThoughtsStep record={state.record} dispatch={dispatch} />}
             {step === 'fork' && (
-              <ForkStep onKeepGoing={handleNext} onSaveForLater={() => navigate('/')} />
+              <ForkStep onKeepGoing={handleNext} onSaveForLater={leave} />
             )}
             {step === 'evidenceFor' && <EvidenceStep record={state.record} dispatch={dispatch} kind="for" />}
             {step === 'evidenceAgainst' && <EvidenceStep record={state.record} dispatch={dispatch} kind="against" />}

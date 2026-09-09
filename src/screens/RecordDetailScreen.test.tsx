@@ -30,6 +30,7 @@ function renderDetail(id: number) {
       <Routes>
         <Route path="/record/:id" element={<RecordDetailScreen />} />
         <Route path="/" element={<div>home</div>} />
+        <Route path="/records" element={<div>records list</div>} />
       </Routes>
     </MemoryRouter>,
   );
@@ -68,7 +69,7 @@ test('delete asks for confirmation then removes the record', async () => {
   await userEvent.click(await screen.findByRole('button', { name: 'Delete' }));
   expect(screen.getByText('Delete this record?')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Delete record' }));
-  expect(await screen.findByText('home')).toBeInTheDocument();
+  expect(await screen.findByText('records list')).toBeInTheDocument();
   expect(await db.records.count()).toBe(0);
 });
 
@@ -80,6 +81,13 @@ test('an open record can also be deleted', async () => {
   await userEvent.click(await screen.findByRole('button', { name: 'Delete' }));
   expect(screen.getByText('Delete this record?')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Delete record' }));
-  expect(await screen.findByText('home')).toBeInTheDocument();
+  expect(await screen.findByText('records list')).toBeInTheDocument();
   expect(await db.records.count()).toBe(0);
+});
+
+test('an open record with no situation shows a gentle fallback heading', async () => {
+  const r = newRecord();
+  await saveRecord(r);
+  renderDetail(r.id!);
+  expect(await screen.findByText('Not written yet')).toBeInTheDocument();
 });

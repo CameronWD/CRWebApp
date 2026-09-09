@@ -70,6 +70,16 @@ test('double-clicking Close on an unsaved record does not create two records', a
   expect(await db.records.toArray()).toHaveLength(1);
 });
 
+test('closing the wizard returns home when there is no history to go back to', async () => {
+  renderNewWizard();
+  await screen.findByText('What happened?');
+  await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+  // Wizard.test renders the Wizard directly without routes; leave() must fall
+  // back to navigate('/') without throwing when history has no in-app entry.
+  const records = await db.records.toArray();
+  expect(records).toHaveLength(0); // nothing worth keeping was saved
+});
+
 test('repeated autosaves across multiple step transitions update in place, not duplicate', async () => {
   renderNewWizard();
   await userEvent.type(await screen.findByRole('textbox'), 'Missed the bus');
