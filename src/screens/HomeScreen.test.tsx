@@ -52,3 +52,27 @@ test('empty state shows a gentle prompt', async () => {
     await screen.findByText('When something stirs you up, capture it here.'),
   ).toBeInTheDocument();
 });
+
+test('completed section sits above open records, and records run oldest to newest', async () => {
+  const a = newRecord();
+  a.situation = 'older open';
+  a.createdAt = '2026-09-01T10:00:00.000Z';
+  await saveRecord(a);
+  const b = newRecord();
+  b.situation = 'newer open';
+  b.createdAt = '2026-09-05T10:00:00.000Z';
+  await saveRecord(b);
+  const c = newRecord();
+  c.situation = 'a completed one';
+  await saveRecord(c);
+  await completeRecord(c);
+  renderHome();
+
+  const recent = await screen.findByText('Recent');
+  const toFinish = await screen.findByText('To finish');
+  expect(recent.compareDocumentPosition(toFinish) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+  const older = await screen.findByText(/older open/);
+  const newer = await screen.findByText(/newer open/);
+  expect(older.compareDocumentPosition(newer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+});

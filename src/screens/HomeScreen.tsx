@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -9,10 +10,21 @@ import InstallNudge from '../components/InstallNudge';
 export default function HomeScreen() {
   const open = useLiveQuery(listOpenRecords, [], []);
   const completed = useLiveQuery(listCompletedRecords, [], []);
-  const recent = completed.slice(0, 5);
+  // Newest records sit at the BOTTOM, nearest the thumb and the button.
+  const recent = completed.slice(0, 5).reverse();
+  const openOldestFirst = [...open].reverse();
+  const hasAny = open.length > 0 || completed.length > 0;
+
+  // Open the page anchored at the bottom, chat-style, once records first load.
+  const scrolled = useRef(false);
+  useEffect(() => {
+    if (scrolled.current || !hasAny) return;
+    scrolled.current = true;
+    window.scrollTo(0, document.body.scrollHeight);
+  }, [hasAny]);
 
   return (
-    <div className="flex flex-col gap-8 pt-4">
+    <div className="flex min-h-screen flex-col gap-8 pb-44 pt-4">
       <header className="flex items-center justify-between">
         <h1 className="font-display text-xl font-medium">Thought Records</h1>
         <Link to="/settings" aria-label="Settings" className="p-2 text-mist dark:text-night-mist">
@@ -23,52 +35,57 @@ export default function HomeScreen() {
         </Link>
       </header>
 
-      <InstallNudge />
-
-      <ExportNudge />
-
-      <motion.div whileTap={{ scale: 0.98 }}>
-        <Link
-          to="/new"
-          className="block rounded-3xl bg-sage-deep p-6 text-white shadow-md dark:bg-sage dark:text-night-bg"
-        >
-          <span className="font-display text-2xl font-medium">New record</span>
-          <p className="mt-1 text-sm opacity-80">Catch a difficult moment while it's fresh.</p>
-        </Link>
-      </motion.div>
-
-      {open.length > 0 && (
-        <section className="flex flex-col gap-3">
-          <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">
-            To finish
-          </h2>
-          {open.map((r) => (
-            <RecordCard key={r.id} record={r} />
-          ))}
-        </section>
-      )}
-
-      {recent.length > 0 && (
-        <section className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between">
-            <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">
-              Recent
-            </h2>
-            <Link to="/records" className="text-sm text-sage-deep dark:text-sage">
-              See all
-            </Link>
-          </div>
-          {recent.map((r) => (
-            <RecordCard key={r.id} record={r} />
-          ))}
-        </section>
-      )}
-
-      {open.length === 0 && completed.length === 0 && (
-        <p className="mt-8 text-center text-sm leading-relaxed text-mist dark:text-night-mist">
+      {!hasAny && (
+        <p className="my-auto text-center text-sm leading-relaxed text-mist dark:text-night-mist">
           When something stirs you up, capture it here.
         </p>
       )}
+
+      <div className="mt-auto flex flex-col gap-8">
+        {recent.length > 0 && (
+          <section className="flex flex-col gap-3">
+            <div className="flex items-baseline justify-between">
+              <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">
+                Recent
+              </h2>
+              <Link to="/records" className="text-sm text-sage-deep dark:text-sage">
+                See all
+              </Link>
+            </div>
+            {recent.map((r) => (
+              <RecordCard key={r.id} record={r} />
+            ))}
+          </section>
+        )}
+
+        {openOldestFirst.length > 0 && (
+          <section className="flex flex-col gap-3">
+            <h2 className="text-sm font-medium uppercase tracking-wide text-mist dark:text-night-mist">
+              To finish
+            </h2>
+            {openOldestFirst.map((r) => (
+              <RecordCard key={r.id} record={r} />
+            ))}
+          </section>
+        )}
+
+        <InstallNudge />
+        <ExportNudge />
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-10">
+        <div className="mx-auto w-full max-w-md bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-8 pt-6 dark:from-night-bg dark:via-night-bg">
+          <motion.div whileTap={{ scale: 0.98 }}>
+            <Link
+              to="/new"
+              className="block rounded-3xl bg-sage-deep p-6 text-white shadow-md dark:bg-sage dark:text-night-bg"
+            >
+              <span className="font-display text-2xl font-medium">New record</span>
+              <p className="mt-1 text-sm opacity-80">Catch a difficult moment while it's fresh.</p>
+            </Link>
+          </motion.div>
+        </div>
+      </div>
     </div>
   );
 }

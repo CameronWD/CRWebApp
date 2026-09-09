@@ -15,3 +15,6 @@ if (!window.matchMedia) {
       dispatchEvent: () => false,
     }) as MediaQueryList;
 }
+
+// jsdom doesn't implement scrolling; HomeScreen scrolls to the bottom on load.
+window.scrollTo = (() => {}) as typeof window.scrollTo;
