@@ -47,3 +47,55 @@ test('syncThemeColor creates the meta when missing and initTheme syncs it', () =
   const meta = document.querySelector('meta[name="theme-color"]');
   expect(meta?.getAttribute('content')).toBe('#F4F7F9');
 });
+
+test('syncThemeColor uses the night colour when the scheme is dark', () => {
+  const original = window.matchMedia;
+  window.matchMedia = ((q: string) =>
+    ({
+      matches: true,
+      media: q,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }) as MediaQueryList) as typeof window.matchMedia;
+  try {
+    applyTheme('sand');
+    expect(document.querySelector('meta[name="theme-color"]')?.getAttribute('content')).toBe('#201B17');
+  } finally {
+    window.matchMedia = original;
+  }
+});
+
+test('initTheme re-syncs the meta when the colour scheme flips', () => {
+  const original = window.matchMedia;
+  let matches = false;
+  let handler: (() => void) | undefined;
+  window.matchMedia = ((q: string) =>
+    ({
+      get matches() {
+        return matches;
+      },
+      media: q,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: (_: string, h: () => void) => {
+        handler = h;
+      },
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }) as unknown as MediaQueryList) as typeof window.matchMedia;
+  try {
+    localStorage.setItem('theme', 'ocean');
+    initTheme();
+    expect(document.querySelector('meta[name="theme-color"]')?.getAttribute('content')).toBe('#F4F7F9');
+    matches = true;
+    handler?.();
+    expect(document.querySelector('meta[name="theme-color"]')?.getAttribute('content')).toBe('#161C20');
+  } finally {
+    window.matchMedia = original;
+  }
+});

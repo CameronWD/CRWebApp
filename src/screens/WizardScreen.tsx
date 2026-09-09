@@ -22,15 +22,15 @@ export default function WizardScreen({ mode }: { mode: WizardMode }) {
     }
     const n = Number(id);
     if (!Number.isInteger(n)) {
-      navigate('/');
+      navigate('/', { replace: true });
       return;
     }
     void getRecord(n)
       .then((r) => {
         if (r) setRecord(r);
-        else navigate('/');
+        else navigate('/', { replace: true });
       })
-      .catch(() => navigate('/'));
+      .catch(() => navigate('/', { replace: true }));
   }, [mode, id, navigate]);
 
   if (!record || namePatterns === null) return null;

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { HashRouter } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, expect, test } from 'vitest';
 import { db } from '../lib/db';
 import { newRecord } from '../lib/repository';
@@ -9,6 +9,7 @@ import Wizard from './Wizard';
 beforeEach(async () => {
   await db.records.clear();
   await db.customEmotions.clear();
+  window.history.replaceState(null, '', '#/');
 });
 
 function renderNewWizard() {
@@ -70,14 +71,34 @@ test('double-clicking Close on an unsaved record does not create two records', a
   expect(await db.records.toArray()).toHaveLength(1);
 });
 
-test('closing the wizard returns home when there is no history to go back to', async () => {
-  renderNewWizard();
+function renderWizardWithRoutes() {
+  return render(
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<div>home stub</div>} />
+        <Route path="/new" element={<Wizard initialRecord={newRecord()} mode="new" />} />
+      </Routes>
+    </HashRouter>,
+  );
+}
+
+test('closing a deep-linked wizard falls back to home (no history behind it)', async () => {
+  window.history.replaceState(null, '', '#/new');
+  renderWizardWithRoutes();
   await screen.findByText('What happened?');
   await userEvent.click(screen.getByRole('button', { name: 'Close' }));
-  // Wizard.test renders the Wizard directly without routes; leave() must fall
-  // back to navigate('/') without throwing when history has no in-app entry.
-  const records = await db.records.toArray();
-  expect(records).toHaveLength(0); // nothing worth keeping was saved
+  expect(await screen.findByText('home stub')).toBeInTheDocument();
+});
+
+test('closing the wizard after in-app navigation goes back to the previous page', async () => {
+  window.history.replaceState(null, '', '#/');
+  renderWizardWithRoutes();
+  await screen.findByText('home stub');
+  window.history.pushState({ idx: 1 }, '', '#/new');
+  window.dispatchEvent(new PopStateEvent('popstate', { state: { idx: 1 } }));
+  await screen.findByText('What happened?');
+  await userEvent.click(screen.getByRole('button', { name: 'Close' }));
+  expect(await screen.findByText('home stub')).toBeInTheDocument();
 });
 
 test('repeated autosaves across multiple step transitions update in place, not duplicate', async () => {

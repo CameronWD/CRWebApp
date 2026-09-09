@@ -10,6 +10,7 @@ export interface Theme {
   paperNight: string;
 }
 
+// paperLight/paperNight are duplicated in index.html's pre-paint script — keep both in sync.
 export const THEMES: Theme[] = [
   { id: 'sage', name: 'Sage', swatch: ['#5F7D6A', '#E5EDE7', '#FAF8F4'], paperLight: '#FAF8F4', paperNight: '#191D1B' },
   { id: 'dusk', name: 'Dusk', swatch: ['#6F6590', '#EAE6F2', '#F7F5FA'], paperLight: '#F7F5FA', paperNight: '#1B1922' },
@@ -28,13 +29,16 @@ const darkScheme = () => window.matchMedia('(prefers-color-scheme: dark)');
 
 export function syncThemeColor(id: ThemeId): void {
   const theme = THEMES.find((t) => t.id === id) ?? THEMES[0];
-  let meta = document.querySelector('meta[name="theme-color"]');
-  if (!meta) {
-    meta = document.createElement('meta');
+  const content = darkScheme().matches ? theme.paperNight : theme.paperLight;
+  const metas = document.querySelectorAll('meta[name="theme-color"]');
+  if (metas.length === 0) {
+    const meta = document.createElement('meta');
     meta.setAttribute('name', 'theme-color');
+    meta.setAttribute('content', content);
     document.head.appendChild(meta);
+    return;
   }
-  meta.setAttribute('content', darkScheme().matches ? theme.paperNight : theme.paperLight);
+  metas.forEach((m) => m.setAttribute('content', content));
 }
 
 export function applyTheme(id: ThemeId): void {

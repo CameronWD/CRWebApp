@@ -26,22 +26,22 @@ export default function RecordDetailScreen() {
   useEffect(() => {
     const n = Number(id);
     if (!Number.isInteger(n)) {
-      navigate('/');
+      navigate('/', { replace: true });
       return;
     }
     void getRecord(n)
       .then((r) => {
         if (r) setRecord(r);
-        else navigate('/');
+        else navigate('/', { replace: true });
       })
-      .catch(() => navigate('/'));
+      .catch(() => navigate('/', { replace: true }));
   }, [id, navigate]);
 
   if (!record) return null;
 
   const remove = async () => {
     await deleteRecord(record.id!);
-    navigate('/records');
+    navigate('/records', { replace: true });
   };
 
   return (
@@ -60,7 +60,7 @@ export default function RecordDetailScreen() {
 
       <div>
         <p className="text-xs text-mist dark:text-night-mist">{formatFullDate(record.createdAt)}</p>
-        {record.situation ? (
+        {record.situation.trim() ? (
           <h1 className="mt-1 font-display text-xl font-medium leading-snug">{record.situation}</h1>
         ) : (
           <h1 className="mt-1 font-display text-xl font-medium italic text-mist dark:text-night-mist">
