@@ -9,11 +9,16 @@ import {
   type WizardMode,
 } from '../lib/wizard';
 import { saveRecord } from '../lib/repository';
-import { Button, ProgressDots, StepShell } from '../components/ui';
+import { Button, ProgressDots } from '../components/ui';
 import SituationStep from './steps/SituationStep';
 import EmotionsStep from './steps/EmotionsStep';
 import ThoughtsStep from './steps/ThoughtsStep';
 import ForkStep from './steps/ForkStep';
+import EvidenceStep from './steps/EvidenceStep';
+import DistortionsStep from './steps/DistortionsStep';
+import BalancedStep from './steps/BalancedStep';
+import RerateStep from './steps/RerateStep';
+import DoneStep from './steps/DoneStep';
 
 export default function Wizard({
   initialRecord,
@@ -91,15 +96,12 @@ export default function Wizard({
             {step === 'fork' && (
               <ForkStep onKeepGoing={handleNext} onSaveForLater={() => navigate('/')} />
             )}
-            {/* RESTRUCTURE_STUB — Task 8 replaces this block with the real restructure steps */}
-            {(step === 'evidenceFor' ||
-              step === 'evidenceAgainst' ||
-              step === 'distortions' ||
-              step === 'balanced' ||
-              step === 'rerate' ||
-              step === 'done') && (
-              <StepShell title="Coming soon" subtitle="The restructuring steps arrive in the next task." />
-            )}
+            {step === 'evidenceFor' && <EvidenceStep record={state.record} dispatch={dispatch} kind="for" />}
+            {step === 'evidenceAgainst' && <EvidenceStep record={state.record} dispatch={dispatch} kind="against" />}
+            {step === 'distortions' && <DistortionsStep record={state.record} dispatch={dispatch} />}
+            {step === 'balanced' && <BalancedStep record={state.record} dispatch={dispatch} />}
+            {step === 'rerate' && <RerateStep record={state.record} dispatch={dispatch} />}
+            {step === 'done' && <DoneStep record={state.record} onFinish={() => navigate('/')} />}
         </div>
       </div>
 
