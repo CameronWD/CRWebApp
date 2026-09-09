@@ -114,7 +114,7 @@ export default function Wizard({
       </div>
 
       {showFooter && (
-        <footer className="sticky bottom-0 -mx-5 bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-8 pt-4 dark:from-night-bg dark:via-night-bg">
+        <footer className="sticky bottom-0 -mx-5 bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-4 dark:from-night-bg dark:via-night-bg">
           <Button
             onClick={handleNext}
             disabled={!canProceed(state)}

@@ -9,7 +9,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 export default function App() {
   return (
     <HashRouter>
-      <div className="mx-auto min-h-screen w-full max-w-md px-5 pb-16">
+      <div className="mx-auto w-full max-w-md px-5">
         <ErrorBoundary>
           <Routes>
             <Route path="/" element={<HomeScreen />} />

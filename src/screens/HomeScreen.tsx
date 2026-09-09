@@ -78,7 +78,7 @@ export default function HomeScreen() {
       )}
 
       <div className="fixed inset-x-0 bottom-0 z-10">
-        <div className="mx-auto w-full max-w-md bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-8 pt-6 dark:from-night-bg dark:via-night-bg">
+        <div className="mx-auto w-full max-w-md bg-gradient-to-t from-paper via-paper to-transparent px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 dark:from-night-bg dark:via-night-bg">
           <motion.div whileTap={{ scale: 0.98 }}>
             <Link
               to="/new"
