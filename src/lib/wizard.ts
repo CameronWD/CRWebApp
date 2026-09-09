@@ -14,8 +14,10 @@ export type WizardStep =
   | 'rerate'
   | 'done';
 
-export function stepsForMode(mode: WizardMode): WizardStep[] {
-  const restructure: WizardStep[] = ['evidenceFor', 'evidenceAgainst', 'distortions', 'balanced', 'rerate', 'done'];
+export function stepsForMode(mode: WizardMode, includeDistortions = true): WizardStep[] {
+  const restructure = (
+    ['evidenceFor', 'evidenceAgainst', 'distortions', 'balanced', 'rerate', 'done'] as WizardStep[]
+  ).filter((s) => includeDistortions || s !== 'distortions');
   switch (mode) {
     case 'new':
       return ['situation', 'emotions', 'thoughts', 'fork', ...restructure];
@@ -32,8 +34,12 @@ export interface WizardState {
   stepIndex: number;
 }
 
-export function initWizard(record: ThoughtRecord, mode: WizardMode): WizardState {
-  return { record, steps: stepsForMode(mode), stepIndex: 0 };
+export function initWizard(
+  record: ThoughtRecord,
+  mode: WizardMode,
+  includeDistortions = true,
+): WizardState {
+  return { record, steps: stepsForMode(mode, includeDistortions), stepIndex: 0 };
 }
 
 export type WizardAction =

@@ -162,3 +162,22 @@ describe('canProceed', () => {
     expect(canProceed(s)).toBe(true);
   });
 });
+
+describe('optional distortions step', () => {
+  test('complete mode without distortions skips the step', () => {
+    expect(stepsForMode('complete', false)).toEqual([
+      'evidenceFor', 'evidenceAgainst', 'balanced', 'rerate', 'done',
+    ]);
+  });
+
+  test('new and edit modes without distortions skip the step but keep everything else', () => {
+    expect(stepsForMode('new', false)).not.toContain('distortions');
+    expect(stepsForMode('new', false)).toContain('fork');
+    expect(stepsForMode('edit', false)).not.toContain('distortions');
+  });
+
+  test('initWizard threads the flag through', () => {
+    const s = initWizard(newRecord(), 'complete', false);
+    expect(s.steps).not.toContain('distortions');
+  });
+});

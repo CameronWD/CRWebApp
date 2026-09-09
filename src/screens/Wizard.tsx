@@ -23,12 +23,17 @@ import DoneStep from './steps/DoneStep';
 export default function Wizard({
   initialRecord,
   mode,
+  includeDistortions = true,
 }: {
   initialRecord: ThoughtRecord;
   mode: WizardMode;
+  includeDistortions?: boolean;
 }) {
   const navigate = useNavigate();
-  const [state, dispatch] = useReducer(wizardReducer, initWizard(initialRecord, mode));
+  const [state, dispatch] = useReducer(
+    wizardReducer,
+    initWizard(initialRecord, mode, includeDistortions),
+  );
   const step = currentStep(state);
   const exiting = useRef(false);
 
