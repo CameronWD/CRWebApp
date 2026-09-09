@@ -4,6 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { listCompletedRecords, listOpenRecords } from '../lib/repository';
 import { RecordCard } from '../components/RecordCard';
 import ExportNudge from '../components/ExportNudge';
+import InstallNudge from '../components/InstallNudge';
 
 export default function HomeScreen() {
   const open = useLiveQuery(listOpenRecords, [], []);
@@ -21,6 +22,8 @@ export default function HomeScreen() {
           </svg>
         </Link>
       </header>
+
+      <InstallNudge />
 
       <ExportNudge />
 
