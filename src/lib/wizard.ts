@@ -1,4 +1,4 @@
-import type { ThoughtRecord } from './types';
+import type { ThoughtRecord, WorksheetFormat } from './types';
 
 export type WizardMode = 'new' | 'complete' | 'edit';
 
@@ -12,9 +12,28 @@ export type WizardStep =
   | 'distortions'
   | 'balanced'
   | 'rerate'
+  | 'negativeThought'
+  | 'emotionBefore'
+  | 'alternative'
+  | 'emotionNow'
   | 'done';
 
-export function stepsForMode(mode: WizardMode, includeDistortions = true): WizardStep[] {
+export function stepsForMode(
+  mode: WizardMode,
+  format: WorksheetFormat,
+  includeDistortions = true,
+): WizardStep[] {
+  if (format === 'realistic') {
+    const restructure: WizardStep[] = ['evidenceFor', 'evidenceAgainst', 'alternative', 'emotionNow', 'done'];
+    switch (mode) {
+      case 'new':
+        return ['situation', 'negativeThought', 'emotionBefore', 'fork', ...restructure];
+      case 'complete':
+        return restructure;
+      case 'edit':
+        return ['situation', 'negativeThought', 'emotionBefore', ...restructure];
+    }
+  }
   const restructure = (
     ['evidenceFor', 'evidenceAgainst', 'distortions', 'balanced', 'rerate', 'done'] as WizardStep[]
   ).filter((s) => includeDistortions || s !== 'distortions');
@@ -39,7 +58,7 @@ export function initWizard(
   mode: WizardMode,
   includeDistortions = true,
 ): WizardState {
-  return { record, steps: stepsForMode(mode, includeDistortions), stepIndex: 0 };
+  return { record, steps: stepsForMode(mode, record.format, includeDistortions), stepIndex: 0 };
 }
 
 export type WizardAction =
@@ -51,6 +70,9 @@ export type WizardAction =
   | { type: 'removeThought'; index: number }
   | { type: 'setHot'; index: number }
   | { type: 'toggleDistortion'; name: string }
+  | { type: 'setEmotionBefore'; emotion: string }
+  | { type: 'setEmotionNow'; emotion: string }
+  | { type: 'setNowStrength'; value: number }
   | { type: 'next' }
   | { type: 'back' };
 
@@ -107,14 +129,31 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
         : [...r.distortions, action.name];
       return withRecord(state, { ...r, distortions });
     }
+    case 'setEmotionBefore': {
+      const already = r.emotions[0]?.emotion === action.emotion;
+      const emotions = already ? [] : [{ emotion: action.emotion, before: 50, after: null }];
+      return withRecord(state, { ...r, emotions });
+    }
+    case 'setEmotionNow': {
+      const emotionNow =
+        r.emotionNow?.emotion === action.emotion ? null : { emotion: action.emotion, strength: 50 };
+      return withRecord(state, { ...r, emotionNow });
+    }
+    case 'setNowStrength': {
+      if (!r.emotionNow) return state;
+      return withRecord(state, { ...r, emotionNow: { ...r.emotionNow, strength: action.value } });
+    }
     case 'next': {
       const stepIndex = Math.min(state.stepIndex + 1, state.steps.length - 1);
       let record = r;
       if (state.steps[stepIndex] === 'rerate') {
         record = {
-          ...r,
-          emotions: r.emotions.map((e) => (e.after === null ? { ...e, after: e.before } : e)),
+          ...record,
+          emotions: record.emotions.map((e) => (e.after === null ? { ...e, after: e.before } : e)),
         };
+      }
+      if (state.steps[stepIndex] === 'emotionNow' && record.beliefAfter === null) {
+        record = { ...record, beliefAfter: 50 };
       }
       return { ...state, stepIndex, record };
     }
@@ -136,6 +175,14 @@ export function canProceed(state: WizardState): boolean {
       return r.balancedThought.trim() !== '';
     case 'rerate':
       return r.emotions.length > 0 && r.emotions.every((e) => e.after !== null);
+    case 'negativeThought':
+      return r.negativeThought.trim() !== '';
+    case 'emotionBefore':
+      return r.emotions.length === 1;
+    case 'alternative':
+      return r.alternativeThought.trim() !== '';
+    case 'emotionNow':
+      return r.emotionNow !== null;
     default:
       return true;
   }
