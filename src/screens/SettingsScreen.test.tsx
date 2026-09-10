@@ -1,9 +1,16 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { HashRouter } from 'react-router-dom';
-import { beforeEach, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 import { db } from '../lib/db';
-import { addCustomEmotion, getSetting, listCustomEmotions, newRecord, saveRecord } from '../lib/repository';
+import {
+  addCustomEmotion,
+  getSetting,
+  listCustomEmotions,
+  newRecord,
+  saveRecord,
+  WORKSHEET_FORMAT_KEY,
+} from '../lib/repository';
 import type { BackupFile } from '../lib/backup';
 import SettingsScreen from './SettingsScreen';
 
@@ -97,11 +104,28 @@ test('theme picker switches and persists the theme', async () => {
 
 test('thinking-pattern toggle is off by default and persists when turned on', async () => {
   renderSettings();
+  fireEvent.click(await screen.findByRole('radio', { name: /Classic/ }));
   const sw = await screen.findByRole('switch', { name: /Name the thinking pattern/ });
   expect(sw).toHaveAttribute('aria-checked', 'false');
   await userEvent.click(sw);
   expect(sw).toHaveAttribute('aria-checked', 'true');
   await waitFor(async () => {
     expect(await getSetting('namePatterns')).toBe('1');
+  });
+});
+
+describe('worksheet format', () => {
+  test('defaults to Realistic Thinking and hides the patterns toggle', async () => {
+    renderSettings();
+    const rt = await screen.findByRole('radio', { name: /Realistic Thinking/ });
+    expect(rt).toBeChecked();
+    expect(screen.queryByText('Name the thinking pattern')).not.toBeInTheDocument();
+  });
+
+  test('choosing Classic persists the setting and reveals the patterns toggle', async () => {
+    renderSettings();
+    fireEvent.click(await screen.findByRole('radio', { name: /Classic/ }));
+    expect(await screen.findByText('Name the thinking pattern')).toBeInTheDocument();
+    expect(await getSetting(WORKSHEET_FORMAT_KEY)).toBe('classic');
   });
 });
