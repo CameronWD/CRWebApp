@@ -1,5 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import type { StepHelp } from '../lib/stepHelp';
 
 const buttonStyles = {
   primary:
@@ -119,14 +120,17 @@ export function StepShell({
   title,
   subtitle,
   kicker,
+  help,
   children,
 }: {
   title: string;
   subtitle?: string;
   kicker?: string;
+  help?: StepHelp;
   children?: ReactNode;
 }) {
   const reduceMotion = useReducedMotion();
+  const [showHelp, setShowHelp] = useState(false);
   return (
     <motion.div
       initial={reduceMotion ? { opacity: 0 } : { opacity: 0, x: 24 }}
@@ -139,10 +143,27 @@ export function StepShell({
         {kicker && (
           <p className="mb-1 text-xs font-medium uppercase tracking-wide text-mist dark:text-night-mist">{kicker}</p>
         )}
-        <h2 className="font-display text-2xl font-medium">{title}</h2>
+        <div className="flex items-start justify-between gap-2">
+          <h2 className="font-display text-2xl font-medium">{title}</h2>
+          {help && (
+            <button
+              type="button"
+              aria-label="About this step"
+              onClick={() => setShowHelp(true)}
+              className="mt-1 shrink-0 p-1 text-mist dark:text-night-mist"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 16v-5" />
+                <path d="M12 8h.01" />
+              </svg>
+            </button>
+          )}
+        </div>
         {subtitle && <p className="mt-1.5 text-sm leading-relaxed text-mist dark:text-night-mist">{subtitle}</p>}
       </div>
       {children}
+      {help && <InfoSheet open={showHelp} help={help} onClose={() => setShowHelp(false)} />}
     </motion.div>
   );
 }
@@ -220,6 +241,60 @@ export function ConfirmSheet({
               </Button>
               <Button variant="ghost" onClick={onCancel}>
                 Cancel
+              </Button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+export function InfoSheet({
+  open,
+  help,
+  onClose,
+}: {
+  open: boolean;
+  help: StepHelp;
+  onClose: () => void;
+}) {
+  const reduceMotion = useReducedMotion();
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 dark:bg-black/50"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={reduceMotion ? { opacity: 0 } : { y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={reduceMotion ? { opacity: 0 } : { y: 80, opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={help.title}
+            className="w-full max-w-md rounded-t-3xl bg-paper p-6 pb-10 dark:bg-night-bg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-display text-xl font-medium">{help.title}</h3>
+            <div className="mt-2 flex flex-col gap-2">
+              {help.paragraphs.map((p, i) => (
+                <p key={i} className="text-sm leading-relaxed text-mist dark:text-night-mist">{p}</p>
+              ))}
+            </div>
+            {help.example && (
+              <blockquote className="mt-4 rounded-2xl bg-sage-soft/60 p-4 text-sm italic leading-relaxed dark:bg-night-surface">
+                Example: {help.example}
+              </blockquote>
+            )}
+            <div className="mt-6">
+              <Button onClick={onClose} className="w-full">
+                Got it
               </Button>
             </div>
           </motion.div>

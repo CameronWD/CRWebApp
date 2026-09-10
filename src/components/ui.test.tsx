@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { expect, test, vi } from 'vitest';
-import { Button, Chip, ConfirmSheet, IntensitySlider, Switch } from './ui';
+import { describe, expect, test, vi } from 'vitest';
+import { Button, Chip, ConfirmSheet, InfoSheet, IntensitySlider, StepShell, Switch } from './ui';
+import { STEP_HELP } from '../lib/stepHelp';
 
 test('Button fires onClick and respects disabled', async () => {
   const onClick = vi.fn();
@@ -49,4 +50,41 @@ test('Switch reflects and toggles its state', async () => {
   expect(sw).toHaveAttribute('aria-checked', 'false');
   await userEvent.click(sw);
   expect(onChange).toHaveBeenCalledWith(true);
+});
+
+describe('InfoSheet', () => {
+  test('renders title, paragraphs and example when open', () => {
+    render(<InfoSheet open help={STEP_HELP.situation} onClose={() => {}} />);
+    expect(screen.getByText('The situation')).toBeInTheDocument();
+    expect(screen.getByText(/camera recorded it/)).toBeInTheDocument();
+    expect(screen.getByText(/criticised my report/)).toBeInTheDocument();
+  });
+
+  test('renders nothing when closed and closes via the Got it button', () => {
+    const onClose = vi.fn();
+    const { rerender } = render(<InfoSheet open={false} help={STEP_HELP.rerate} onClose={onClose} />);
+    expect(screen.queryByText('Rating the feelings again')).not.toBeInTheDocument();
+    rerender(<InfoSheet open help={STEP_HELP.rerate} onClose={onClose} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  test('omits the example block when the entry has none', () => {
+    render(<InfoSheet open help={STEP_HELP.rerate} onClose={() => {}} />);
+    expect(screen.queryByText(/Example:/)).not.toBeInTheDocument();
+  });
+});
+
+describe('StepShell help', () => {
+  test('renders an About this step button that opens the sheet', () => {
+    render(<StepShell title="T" help={STEP_HELP.situation} />);
+    expect(screen.queryByText('The situation')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'About this step' }));
+    expect(screen.getByText('The situation')).toBeInTheDocument();
+  });
+
+  test('renders no info button without help', () => {
+    render(<StepShell title="T" />);
+    expect(screen.queryByRole('button', { name: 'About this step' })).not.toBeInTheDocument();
+  });
 });
