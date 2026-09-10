@@ -11,7 +11,7 @@ beforeEach(async () => {
 });
 
 async function seedCompleted() {
-  const r = newRecord();
+  const r = newRecord('classic');
   r.situation = 'Argument at work';
   r.emotions = [{ emotion: 'Anxious', before: 80, after: 45 }];
   r.thoughts = [{ text: 'I will be fired', isHot: true }];
@@ -55,7 +55,7 @@ test('a non-numeric id redirects home instead of hanging blank', async () => {
 });
 
 test('open records offer Continue instead of Edit', async () => {
-  const r = newRecord();
+  const r = newRecord('classic');
   r.situation = 'Half captured';
   await saveRecord(r);
   renderDetail(r.id!);
@@ -74,7 +74,7 @@ test('delete asks for confirmation then removes the record', async () => {
 });
 
 test('an open record can also be deleted', async () => {
-  const r = newRecord();
+  const r = newRecord('classic');
   r.situation = 'Half captured';
   await saveRecord(r);
   renderDetail(r.id!);
@@ -86,7 +86,7 @@ test('an open record can also be deleted', async () => {
 });
 
 test('an open record with no situation shows a gentle fallback heading', async () => {
-  const r = newRecord();
+  const r = newRecord('classic');
   await saveRecord(r);
   renderDetail(r.id!);
   expect(await screen.findByText('Not written yet')).toBeInTheDocument();

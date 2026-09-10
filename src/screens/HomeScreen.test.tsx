@@ -25,7 +25,7 @@ test('shows the new record button', async () => {
 });
 
 test('lists open records under To finish', async () => {
-  const r = newRecord();
+  const r = newRecord('classic');
   r.situation = 'Argument at work';
   r.emotions = [{ emotion: 'Anxious', before: 80, after: null }];
   await saveRecord(r);
@@ -35,7 +35,7 @@ test('lists open records under To finish', async () => {
 });
 
 test('lists completed records under Recent', async () => {
-  const r = newRecord();
+  const r = newRecord('classic');
   r.situation = 'Missed a call from mum';
   r.emotions = [{ emotion: 'Guilty', before: 70, after: 30 }];
   r.balancedThought = 'She knows I love her.';
@@ -55,15 +55,15 @@ test('empty state shows a gentle prompt', async () => {
 });
 
 test('completed section sits above open records, and records run oldest to newest', async () => {
-  const a = newRecord();
+  const a = newRecord('classic');
   a.situation = 'older open';
   a.createdAt = '2026-09-01T10:00:00.000Z';
   await saveRecord(a);
-  const b = newRecord();
+  const b = newRecord('classic');
   b.situation = 'newer open';
   b.createdAt = '2026-09-05T10:00:00.000Z';
   await saveRecord(b);
-  const c = newRecord();
+  const c = newRecord('classic');
   c.situation = 'a completed one';
   await saveRecord(c);
   await completeRecord(c);
@@ -79,7 +79,7 @@ test('completed section sits above open records, and records run oldest to newes
 });
 
 test('To finish cards link to the completion wizard, and See all appears when there is nothing Recent', async () => {
-  const r = newRecord();
+  const r = newRecord('classic');
   r.situation = 'Argument at work';
   await saveRecord(r);
   renderHome();
@@ -93,10 +93,10 @@ test('To finish cards link to the completion wizard, and See all appears when th
 });
 
 test('anchors scroll to the bottom once both open and completed records have loaded', async () => {
-  const open = newRecord();
+  const open = newRecord('classic');
   open.situation = 'An open one';
   await saveRecord(open);
-  const completed = newRecord();
+  const completed = newRecord('classic');
   completed.situation = 'A completed one';
   await saveRecord(completed);
   await completeRecord(completed);

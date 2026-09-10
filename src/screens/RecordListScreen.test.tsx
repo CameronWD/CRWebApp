@@ -10,7 +10,7 @@ beforeEach(async () => {
 });
 
 test('the All records list routes open records to the detail view', async () => {
-  const r = newRecord();
+  const r = newRecord('classic');
   r.situation = 'Half captured';
   await saveRecord(r);
   render(

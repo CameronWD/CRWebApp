@@ -1,8 +1,8 @@
 import { db } from './db';
 import { DEFAULT_EMOTIONS } from './constants';
-import type { CustomEmotion, ThoughtRecord } from './types';
+import type { CustomEmotion, ThoughtRecord, WorksheetFormat } from './types';
 
-export function newRecord(): ThoughtRecord {
+export function newRecord(format: WorksheetFormat): ThoughtRecord {
   const now = new Date().toISOString();
   return {
     status: 'open',
@@ -16,6 +16,12 @@ export function newRecord(): ThoughtRecord {
     evidenceAgainst: '',
     distortions: [],
     balancedThought: '',
+    format,
+    negativeThought: '',
+    beliefBefore: format === 'realistic' ? 50 : null,
+    alternativeThought: '',
+    beliefAfter: null,
+    emotionNow: null,
   };
 }
 
@@ -65,6 +71,11 @@ export function hotThought(record: ThoughtRecord): string {
   return record.thoughts.find((t) => t.isHot)?.text ?? '';
 }
 
+/** The thought a record works on: the Negative Thought (realistic) or the Hot Thought (classic). */
+export function activeThought(record: ThoughtRecord): string {
+  return record.format === 'realistic' ? record.negativeThought : hotThought(record);
+}
+
 export async function listCustomEmotions(): Promise<CustomEmotion[]> {
   return db.customEmotions.toArray();
 }
@@ -93,4 +104,10 @@ export async function getSetting(key: string): Promise<string | null> {
 
 export async function setSetting(key: string, value: string): Promise<void> {
   await db.settings.put({ key, value });
+}
+
+export const WORKSHEET_FORMAT_KEY = 'worksheetFormat';
+
+export async function getWorksheetFormat(): Promise<WorksheetFormat> {
+  return (await getSetting(WORKSHEET_FORMAT_KEY)) === 'classic' ? 'classic' : 'realistic';
 }

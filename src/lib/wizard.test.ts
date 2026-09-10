@@ -10,7 +10,7 @@ import {
 } from './wizard';
 
 function fresh(mode: 'new' | 'complete' | 'edit' = 'new'): WizardState {
-  return initWizard(newRecord(), mode);
+  return initWizard(newRecord('classic'), mode);
 }
 
 describe('step order', () => {
@@ -177,7 +177,7 @@ describe('optional distortions step', () => {
   });
 
   test('initWizard threads the flag through', () => {
-    const s = initWizard(newRecord(), 'complete', false);
+    const s = initWizard(newRecord('classic'), 'complete', false);
     expect(s.steps).not.toContain('distortions');
   });
 });

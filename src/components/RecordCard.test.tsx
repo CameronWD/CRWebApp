@@ -19,6 +19,12 @@ function make(status: 'open' | 'completed', id: number): ThoughtRecord {
     evidenceAgainst: '',
     distortions: [],
     balancedThought: '',
+    format: 'classic',
+    negativeThought: '',
+    beliefBefore: null,
+    alternativeThought: '',
+    beliefAfter: null,
+    emotionNow: null,
   };
 }
 

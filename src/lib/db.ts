@@ -1,4 +1,5 @@
 import Dexie, { type Table } from 'dexie';
+import { withFormatDefaults, type StoredRecord } from './migrate';
 import type { CustomEmotion, Setting, ThoughtRecord } from './types';
 
 export class ThoughtDb extends Dexie {
@@ -15,6 +16,14 @@ export class ThoughtDb extends Dexie {
     });
     this.version(2).stores({
       records: '++id, status, createdAt, updatedAt',
+    });
+    this.version(3).upgrade(async (tx) => {
+      await tx
+        .table('records')
+        .toCollection()
+        .modify((r: Record<string, unknown>) => {
+          Object.assign(r, withFormatDefaults(r as unknown as StoredRecord));
+        });
     });
   }
 }

@@ -17,7 +17,7 @@ export default function WizardScreen({ mode }: { mode: WizardMode }) {
 
   useEffect(() => {
     if (mode === 'new') {
-      setRecord(newRecord());
+      setRecord(newRecord('classic'));
       return;
     }
     const n = Number(id);

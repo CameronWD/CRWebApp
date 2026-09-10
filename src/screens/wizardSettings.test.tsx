@@ -12,7 +12,7 @@ beforeEach(async () => {
 });
 
 async function seedOpen() {
-  const r = newRecord();
+  const r = newRecord('classic');
   r.situation = 'Argument at work';
   r.emotions = [{ emotion: 'Anxious', before: 80, after: null }];
   r.thoughts = [{ text: 'I will be fired', isHot: true }];

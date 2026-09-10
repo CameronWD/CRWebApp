@@ -11,7 +11,7 @@ beforeEach(async () => {
 
 describe('backup round trip', () => {
   test('createBackup captures records and custom emotions', async () => {
-    const r = newRecord();
+    const r = newRecord('classic');
     r.situation = 'test';
     await saveRecord(r);
     await addCustomEmotion('Restless');
@@ -24,10 +24,10 @@ describe('backup round trip', () => {
   });
 
   test('restoreBackup replaces existing data', async () => {
-    const old = newRecord();
+    const old = newRecord('classic');
     old.situation = 'will be replaced';
     await saveRecord(old);
-    const incoming = newRecord();
+    const incoming = newRecord('classic');
     incoming.situation = 'restored';
     await restoreBackup({
       app: 'thought-records',
@@ -57,7 +57,7 @@ describe('downloadBackup', () => {
     const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     const appendSpy = vi.spyOn(document.body, 'appendChild');
 
-    const r = newRecord();
+    const r = newRecord('classic');
     r.situation = 'test';
     await saveRecord(r);
 

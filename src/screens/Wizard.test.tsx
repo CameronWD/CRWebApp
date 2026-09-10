@@ -15,7 +15,7 @@ beforeEach(async () => {
 function renderNewWizard() {
   return render(
     <HashRouter>
-      <Wizard initialRecord={newRecord()} mode="new" />
+      <Wizard initialRecord={newRecord('classic')} mode="new" />
     </HashRouter>,
   );
 }
@@ -76,7 +76,7 @@ function renderWizardWithRoutes() {
     <HashRouter>
       <Routes>
         <Route path="/" element={<div>home stub</div>} />
-        <Route path="/new" element={<Wizard initialRecord={newRecord()} mode="new" />} />
+        <Route path="/new" element={<Wizard initialRecord={newRecord('classic')} mode="new" />} />
       </Routes>
     </HashRouter>,
   );

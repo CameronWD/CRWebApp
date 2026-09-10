@@ -43,11 +43,11 @@ test('states the privacy promise', async () => {
 });
 
 test('importing a valid backup replaces existing data and shows confirmation', async () => {
-  const existing = newRecord();
+  const existing = newRecord('classic');
   existing.situation = 'will be replaced';
   await saveRecord(existing);
 
-  const incoming = newRecord();
+  const incoming = newRecord('classic');
   incoming.situation = 'restored';
   const backup: BackupFile = {
     app: 'thought-records',
@@ -72,7 +72,7 @@ test('importing a valid backup replaces existing data and shows confirmation', a
 });
 
 test('importing a garbage file shows an error and leaves data untouched', async () => {
-  const existing = newRecord();
+  const existing = newRecord('classic');
   existing.situation = 'stays put';
   await saveRecord(existing);
 

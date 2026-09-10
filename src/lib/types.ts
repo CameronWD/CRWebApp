@@ -11,6 +11,13 @@ export interface AutomaticThought {
   isHot: boolean;
 }
 
+export type WorksheetFormat = 'realistic' | 'classic';
+
+export interface EmotionNow {
+  emotion: string;
+  strength: number; // 0-100
+}
+
 export interface ThoughtRecord {
   id?: number;
   status: RecordStatus;
@@ -24,6 +31,13 @@ export interface ThoughtRecord {
   evidenceAgainst: string;
   distortions: string[];
   balancedThought: string;
+  format: WorksheetFormat;
+  // Realistic Thinking fields — empty/null on classic records
+  negativeThought: string;
+  beliefBefore: number | null; // 0-100
+  alternativeThought: string;
+  beliefAfter: number | null; // 0-100, null until the alternative step is passed
+  emotionNow: EmotionNow | null;
 }
 
 export interface CustomEmotion {
