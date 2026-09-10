@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import type { EmotionRating, ThoughtRecord } from '../lib/types';
 import { formatRelative } from '../lib/format';
 import { deleteRecord } from '../lib/repository';
@@ -52,13 +52,31 @@ export function RecordCard({
   const [revealed, setRevealed] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const dragging = useRef(false);
+  const controls = useAnimationControls();
 
-  const close = () => setRevealed(false);
+  const springTransition = reduceMotion
+    ? { duration: 0 }
+    : { type: 'spring' as const, stiffness: 400, damping: 40 };
+
+  // Always re-asserts the target position to framer-motion, even when the
+  // logical `revealed` flag doesn't change (e.g. a drag that ends without
+  // crossing the threshold while already revealed) — setState alone would
+  // bail the re-render for an unchanged primitive and leave the card
+  // wherever drag physics happened to decay to.
+  const snapTo = (target: boolean) => {
+    void controls.start({ x: target ? -REVEAL_WIDTH : 0 }, springTransition);
+  };
+
+  const close = () => {
+    setRevealed(false);
+    snapTo(false);
+  };
 
   const reveal = () => {
     if (closeActiveCard && closeActiveCard !== close) closeActiveCard();
     closeActiveCard = close;
     setRevealed(true);
+    snapTo(true);
   };
 
   // Scrolling closes the revealed card.
@@ -75,7 +93,7 @@ export function RecordCard({
 
   const remove = async () => {
     setConfirming(false);
-    setRevealed(false);
+    close();
     await deleteRecord(record.id!);
   };
 
@@ -94,8 +112,10 @@ export function RecordCard({
         drag="x"
         dragConstraints={{ left: -REVEAL_WIDTH, right: 0 }}
         dragElastic={0.05}
-        animate={{ x: revealed ? -REVEAL_WIDTH : 0 }}
-        transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 400, damping: 40 }}
+        dragMomentum={false}
+        animate={controls}
+        initial={false}
+        transition={springTransition}
         onDragStart={() => {
           dragging.current = true;
           if (closeActiveCard && closeActiveCard !== close) closeActiveCard();
