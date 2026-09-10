@@ -5,7 +5,7 @@ import type { ThoughtRecord } from '../lib/types';
 import { deleteRecord, getRecord } from '../lib/repository';
 import { formatFullDate } from '../lib/format';
 import { ConfirmSheet } from '../components/ui';
-import { EmotionSummary } from '../components/RecordCard';
+import { EmotionSummary, RtEmotionSummary } from '../components/RecordCard';
 import AppHeader, { BackButton } from '../components/AppHeader';
 
 function Section({ label, children }: { label: string; children: ReactNode }) {
@@ -69,48 +69,80 @@ export default function RecordDetailScreen() {
         )}
       </div>
 
-      {record.emotions.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {record.emotions.map((e) => (
-            <EmotionSummary key={e.emotion} rating={e} />
-          ))}
-        </div>
-      )}
+      {record.format === 'realistic' ? (
+        <>
+          {record.emotions.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              <RtEmotionSummary record={record} />
+            </div>
+          )}
+          {record.negativeThought && (
+            <Section label="The thought">
+              <p>{record.negativeThought}</p>
+              {record.beliefBefore !== null && (
+                <p className="mt-1 text-xs text-mist dark:text-night-mist">Believed {record.beliefBefore}%</p>
+              )}
+            </Section>
+          )}
+          {record.evidenceFor && <Section label="Evidence for the thought">{record.evidenceFor}</Section>}
+          {record.evidenceAgainst && <Section label="Evidence against the thought">{record.evidenceAgainst}</Section>}
+          {record.alternativeThought && (
+            <Section label="Alternative thought">
+              <blockquote className="rounded-2xl bg-sage-soft/60 p-4 italic dark:bg-night-surface">
+                “<span>{record.alternativeThought}</span>”
+              </blockquote>
+              {record.beliefAfter !== null && (
+                <p className="mt-1.5 text-xs text-mist dark:text-night-mist">Believed {record.beliefAfter}%</p>
+              )}
+            </Section>
+          )}
+        </>
+      ) : (
+        <>
+          {record.emotions.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {record.emotions.map((e) => (
+                <EmotionSummary key={e.emotion} rating={e} />
+              ))}
+            </div>
+          )}
 
-      {record.thoughts.length > 0 && (
-        <Section label="What went through my mind">
-          <ul className="flex flex-col gap-1">
-            {record.thoughts.map((t, i) => (
-              <li key={i} className={t.isHot ? 'font-medium' : ''}>
-                {t.text}
-                {t.isHot && <span className="ml-2 text-xs text-sage-deep dark:text-sage">hot thought</span>}
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
+          {record.thoughts.length > 0 && (
+            <Section label="What went through my mind">
+              <ul className="flex flex-col gap-1">
+                {record.thoughts.map((t, i) => (
+                  <li key={i} className={t.isHot ? 'font-medium' : ''}>
+                    {t.text}
+                    {t.isHot && <span className="ml-2 text-xs text-sage-deep dark:text-sage">hot thought</span>}
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
 
-      {record.evidenceFor && <Section label="Evidence for">{record.evidenceFor}</Section>}
-      {record.evidenceAgainst && <Section label="Evidence against">{record.evidenceAgainst}</Section>}
+          {record.evidenceFor && <Section label="Evidence for">{record.evidenceFor}</Section>}
+          {record.evidenceAgainst && <Section label="Evidence against">{record.evidenceAgainst}</Section>}
 
-      {record.distortions.length > 0 && (
-        <Section label="Thinking traps">
-          <div className="flex flex-wrap gap-1.5">
-            {record.distortions.map((d) => (
-              <span key={d} className="rounded-full bg-blue-soft px-2.5 py-1 text-xs font-medium text-blue-dusty dark:bg-night-surface">
-                {d}
-              </span>
-            ))}
-          </div>
-        </Section>
-      )}
+          {record.distortions.length > 0 && (
+            <Section label="Thinking traps">
+              <div className="flex flex-wrap gap-1.5">
+                {record.distortions.map((d) => (
+                  <span key={d} className="rounded-full bg-blue-soft px-2.5 py-1 text-xs font-medium text-blue-dusty dark:bg-night-surface">
+                    {d}
+                  </span>
+                ))}
+              </div>
+            </Section>
+          )}
 
-      {record.balancedThought && (
-        <Section label="A fairer take">
-          <blockquote className="rounded-2xl bg-sage-soft/60 p-4 italic dark:bg-night-surface">
-            “<span>{record.balancedThought}</span>”
-          </blockquote>
-        </Section>
+          {record.balancedThought && (
+            <Section label="A fairer take">
+              <blockquote className="rounded-2xl bg-sage-soft/60 p-4 italic dark:bg-night-surface">
+                “<span>{record.balancedThought}</span>”
+              </blockquote>
+            </Section>
+          )}
+        </>
       )}
 
       <button

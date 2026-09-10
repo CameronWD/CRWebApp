@@ -91,3 +91,50 @@ test('an open record with no situation shows a gentle fallback heading', async (
   renderDetail(r.id!);
   expect(await screen.findByText('Not written yet')).toBeInTheDocument();
 });
+
+test('shows every section of a completed classic record (regression guard)', async () => {
+  const r = await seedCompleted();
+  renderDetail(r.id!);
+  expect(await screen.findByText('Argument at work')).toBeInTheDocument();
+  expect(screen.getByText('What went through my mind')).toBeInTheDocument();
+  expect(screen.getByText('I will be fired')).toBeInTheDocument();
+  expect(screen.getByText('hot thought')).toBeInTheDocument();
+  expect(screen.getByText('Evidence for')).toBeInTheDocument();
+  expect(screen.getByText('Evidence against')).toBeInTheDocument();
+  expect(screen.getByText('Thinking traps')).toBeInTheDocument();
+  expect(screen.getByText('Catastrophising')).toBeInTheDocument();
+  expect(screen.getByText('A fairer take')).toBeInTheDocument();
+  expect(screen.getByText('One tense chat is not a firing')).toBeInTheDocument();
+});
+
+async function seedCompletedRealistic() {
+  const r = newRecord('realistic');
+  r.situation = 'Missed the deadline';
+  r.emotions = [{ emotion: 'Anxious', before: 80, after: null }];
+  r.negativeThought = 'I always let people down';
+  r.beliefBefore = 90;
+  r.evidenceFor = 'I was late this time';
+  r.evidenceAgainst = 'I have hit every other deadline this year';
+  r.alternativeThought = 'One missed deadline is not a pattern';
+  r.beliefAfter = 40;
+  r.emotionNow = { emotion: 'Calm', strength: 30 };
+  await saveRecord(r);
+  await completeRecord(r);
+  return r;
+}
+
+test('shows the realistic-thinking sections for a completed realistic record', async () => {
+  const r = await seedCompletedRealistic();
+  renderDetail(r.id!);
+  expect(await screen.findByText('Missed the deadline')).toBeInTheDocument();
+  expect(screen.getByText('I always let people down')).toBeInTheDocument();
+  expect(screen.getByText('Believed 90%')).toBeInTheDocument();
+  expect(screen.getByText('Evidence for the thought')).toBeInTheDocument();
+  expect(screen.getByText('I was late this time')).toBeInTheDocument();
+  expect(screen.getByText('Evidence against the thought')).toBeInTheDocument();
+  expect(screen.getByText('I have hit every other deadline this year')).toBeInTheDocument();
+  expect(screen.getByText('One missed deadline is not a pattern')).toBeInTheDocument();
+  expect(screen.getByText('Believed 40%')).toBeInTheDocument();
+  expect(screen.queryByText('hot thought')).not.toBeInTheDocument();
+  expect(screen.queryByText('Thinking traps')).not.toBeInTheDocument();
+});

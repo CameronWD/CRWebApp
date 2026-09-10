@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { HashRouter } from 'react-router-dom';
-import { expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 import type { ThoughtRecord } from '../lib/types';
+import { newRecord } from '../lib/repository';
 import { RecordCard } from './RecordCard';
 
 function make(status: 'open' | 'completed', id: number): ThoughtRecord {
@@ -49,4 +50,39 @@ test('open records link to the detail view when openTo is detail', () => {
 test('completed records always link to the detail view', () => {
   renderCard(make('completed', 2), 'wizard');
   expect(screen.getByRole('link')).toHaveAttribute('href', '#/record/2');
+});
+
+describe('realistic records', () => {
+  test('open record shows the before emotion only', () => {
+    const r = {
+      ...newRecord('realistic'),
+      id: 1,
+      situation: 's',
+      emotions: [{ emotion: 'Anxious', before: 80, after: null }],
+    };
+    renderCard(r);
+    expect(screen.getByText('Anxious 80')).toBeInTheDocument();
+  });
+
+  test('completed record shows the journey, collapsing a same-name emotion', () => {
+    const base = {
+      ...newRecord('realistic'),
+      id: 1,
+      situation: 's',
+      status: 'completed' as const,
+      emotions: [{ emotion: 'Anxious', before: 80, after: null }],
+    };
+    const { rerender } = render(
+      <HashRouter>
+        <RecordCard record={{ ...base, emotionNow: { emotion: 'Calm', strength: 30 } }} />
+      </HashRouter>,
+    );
+    expect(screen.getByText('Anxious 80 → Calm 30')).toBeInTheDocument();
+    rerender(
+      <HashRouter>
+        <RecordCard record={{ ...base, emotionNow: { emotion: 'Anxious', strength: 30 } }} />
+      </HashRouter>,
+    );
+    expect(screen.getByText('Anxious 80 → 30')).toBeInTheDocument();
+  });
 });

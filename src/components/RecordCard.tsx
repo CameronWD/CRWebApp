@@ -59,12 +59,20 @@ export function RecordCard({
           )}
         </div>
         <p className="mt-1 line-clamp-2 text-sm leading-relaxed">{record.situation}</p>
-        {record.emotions.length > 0 && (
-          <div className="mt-2.5 flex flex-wrap gap-1.5">
-            {record.emotions.map((e) => (
-              <EmotionSummary key={e.emotion} rating={e} />
-            ))}
-          </div>
+        {record.format === 'realistic' ? (
+          record.emotions.length > 0 && (
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              <RtEmotionSummary record={record} />
+            </div>
+          )
+        ) : (
+          record.emotions.length > 0 && (
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              {record.emotions.map((e) => (
+                <EmotionSummary key={e.emotion} rating={e} />
+              ))}
+            </div>
+          )
         )}
       </Link>
     </motion.div>
