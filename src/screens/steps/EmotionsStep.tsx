@@ -5,6 +5,7 @@ import type { WizardAction } from '../../lib/wizard';
 import { addCustomEmotion, allEmotionNames } from '../../lib/repository';
 import { Chip, IntensitySlider, StepShell } from '../../components/ui';
 import { DEFAULT_EMOTIONS } from '../../lib/constants';
+import { STEP_HELP } from '../../lib/stepHelp';
 
 export default function EmotionsStep({
   record,
@@ -31,7 +32,11 @@ export default function EmotionsStep({
   };
 
   return (
-    <StepShell title="What are you feeling?" subtitle="Tap everything that's there, then set how strong each one is.">
+    <StepShell
+      title="What are you feeling?"
+      subtitle="Tap everything that's there, then set how strong each one is."
+      help={STEP_HELP.emotionsClassic}
+    >
       <div className="flex flex-wrap gap-2">
         {names.map((name) => (
           <Chip

@@ -3,6 +3,7 @@ import type { ThoughtRecord } from '../../lib/types';
 import type { WizardAction } from '../../lib/wizard';
 import { activeThought } from '../../lib/repository';
 import { AutoTextArea, StepShell } from '../../components/ui';
+import { STEP_HELP } from '../../lib/stepHelp';
 
 export default function EvidenceStep({
   record,
@@ -32,6 +33,7 @@ export default function EvidenceStep({
           ? 'Facts only, not feelings. It’s okay if there are some.'
           : 'Facts that don’t line up with it — or what you’d point out to a friend who thought this.'
       }
+      help={kind === 'for' ? STEP_HELP.evidenceFor : STEP_HELP.evidenceAgainst}
     >
       <blockquote className="rounded-2xl border-l-4 border-sage bg-sage-soft/60 p-4 text-sm italic leading-relaxed dark:border-sage dark:bg-night-surface">
         “{activeThought(record)}”
@@ -44,7 +46,6 @@ export default function EvidenceStep({
             fields: kind === 'for' ? { evidenceFor: v } : { evidenceAgainst: v },
           })
         }
-        placeholder={kind === 'for' ? 'What backs it up…' : 'What doesn’t add up…'}
       />
       <p className="text-xs text-mist dark:text-night-mist">Nothing coming? That’s fine — just tap Next.</p>
     </StepShell>

@@ -2,6 +2,7 @@ import type { Dispatch } from 'react';
 import type { ThoughtRecord } from '../../lib/types';
 import type { WizardAction } from '../../lib/wizard';
 import { AutoTextArea, IntensitySlider, StepShell } from '../../components/ui';
+import { STEP_HELP } from '../../lib/stepHelp';
 
 export default function AlternativeStep({
   record,
@@ -15,6 +16,7 @@ export default function AlternativeStep({
       kicker="Realistic Thinking"
       title="What is your alternative thought?"
       subtitle="Something believable that fits the evidence on both sides — in your own words."
+      help={STEP_HELP.alternative}
     >
       <blockquote className="rounded-2xl border-l-4 border-sage bg-sage-soft/60 p-4 text-sm italic leading-relaxed dark:border-sage dark:bg-night-surface">
         “{record.negativeThought}”
@@ -28,7 +30,6 @@ export default function AlternativeStep({
       <AutoTextArea
         value={record.alternativeThought}
         onChange={(v) => dispatch({ type: 'patch', fields: { alternativeThought: v } })}
-        placeholder="A more realistic way to see it…"
       />
       <IntensitySlider
         label="How much do you believe in this thought?"

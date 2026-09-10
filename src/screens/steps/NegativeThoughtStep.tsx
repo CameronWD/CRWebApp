@@ -2,6 +2,7 @@ import type { Dispatch } from 'react';
 import type { ThoughtRecord } from '../../lib/types';
 import type { WizardAction } from '../../lib/wizard';
 import { AutoTextArea, IntensitySlider, StepShell } from '../../components/ui';
+import { STEP_HELP } from '../../lib/stepHelp';
 
 export default function NegativeThoughtStep({
   record,
@@ -15,11 +16,11 @@ export default function NegativeThoughtStep({
       kicker="Identifying negative thoughts"
       title="What was your thought?"
       subtitle="The thought that went through your mind in that moment, in its own words."
+      help={STEP_HELP.negativeThought}
     >
       <AutoTextArea
         value={record.negativeThought}
         onChange={(v) => dispatch({ type: 'patch', fields: { negativeThought: v } })}
-        placeholder="“I always mess this up”"
         autoFocus
       />
       <IntensitySlider

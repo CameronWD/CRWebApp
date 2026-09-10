@@ -4,6 +4,7 @@ import type { ThoughtRecord } from '../../lib/types';
 import type { WizardAction } from '../../lib/wizard';
 import { DISTORTIONS } from '../../lib/constants';
 import { StepShell } from '../../components/ui';
+import { STEP_HELP } from '../../lib/stepHelp';
 
 export default function DistortionsStep({
   record,
@@ -16,6 +17,7 @@ export default function DistortionsStep({
     <StepShell
       title="Spot any patterns?"
       subtitle="These are common thinking traps. Tag any that fit the thought — or none at all."
+      help={STEP_HELP.distortions}
     >
       <div className="flex flex-col gap-2">
         {DISTORTIONS.map((d) => {

@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import type { ThoughtRecord } from '../../lib/types';
 import type { WizardAction } from '../../lib/wizard';
 import { StepShell } from '../../components/ui';
+import { STEP_HELP } from '../../lib/stepHelp';
 
 export default function ThoughtsStep({
   record,
@@ -23,6 +24,7 @@ export default function ThoughtsStep({
     <StepShell
       title="What went through your mind?"
       subtitle="Add each thought as it came. Then tap the one that stings the most — that's the one we'll work on."
+      help={STEP_HELP.thoughts}
     >
       <form
         onSubmit={(e) => {
@@ -34,7 +36,6 @@ export default function ThoughtsStep({
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="“I always mess this up”"
           aria-label="New thought"
           autoFocus
           className="min-w-0 flex-1 rounded-2xl bg-surface p-4 text-base shadow-sm outline-none ring-sage placeholder:text-mist/60 focus:ring-2 dark:bg-night-surface dark:placeholder:text-night-mist/60"

@@ -5,6 +5,7 @@ import type { WizardAction } from '../../lib/wizard';
 import { addCustomEmotion, allEmotionNames } from '../../lib/repository';
 import { Chip, IntensitySlider, StepShell } from '../../components/ui';
 import { DEFAULT_EMOTIONS } from '../../lib/constants';
+import { STEP_HELP } from '../../lib/stepHelp';
 
 export default function EmotionBeforeStep({
   record,
@@ -35,6 +36,7 @@ export default function EmotionBeforeStep({
       kicker="Identifying negative thoughts"
       title="What was your emotion?"
       subtitle="Pick the one that was strongest."
+      help={STEP_HELP.emotionBefore}
     >
       <div className="flex flex-wrap gap-2">
         {names.map((name) => (

@@ -3,6 +3,7 @@ import type { ThoughtRecord } from '../../lib/types';
 import type { WizardAction } from '../../lib/wizard';
 import { hotThought } from '../../lib/repository';
 import { AutoTextArea, StepShell } from '../../components/ui';
+import { STEP_HELP } from '../../lib/stepHelp';
 
 export default function BalancedStep({
   record,
@@ -15,6 +16,7 @@ export default function BalancedStep({
     <StepShell
       title="What would a fairer take be?"
       subtitle="Something believable that accounts for both sides — not forced positivity. What would you tell a friend?"
+      help={STEP_HELP.balanced}
     >
       <blockquote className="rounded-2xl border-l-4 border-sage bg-sage-soft/60 p-4 text-sm italic leading-relaxed dark:border-sage dark:bg-night-surface">
         “{hotThought(record)}”
@@ -28,7 +30,6 @@ export default function BalancedStep({
       <AutoTextArea
         value={record.balancedThought}
         onChange={(v) => dispatch({ type: 'patch', fields: { balancedThought: v } })}
-        placeholder="A more even-handed way to see it…"
       />
     </StepShell>
   );

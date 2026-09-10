@@ -5,6 +5,7 @@ import type { WizardAction } from '../../lib/wizard';
 import { addCustomEmotion, allEmotionNames } from '../../lib/repository';
 import { Chip, IntensitySlider, StepShell } from '../../components/ui';
 import { DEFAULT_EMOTIONS } from '../../lib/constants';
+import { STEP_HELP } from '../../lib/stepHelp';
 
 export default function EmotionNowStep({
   record,
@@ -35,6 +36,7 @@ export default function EmotionNowStep({
       kicker="Realistic Thinking"
       title="What is your emotion now?"
       subtitle="With your alternative thought in mind. It can be a different emotion than before."
+      help={STEP_HELP.emotionNow}
     >
       <div className="flex flex-wrap gap-2">
         {names.map((name) => (
