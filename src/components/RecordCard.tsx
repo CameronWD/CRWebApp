@@ -15,6 +15,22 @@ export function EmotionSummary({ rating }: { rating: EmotionRating }) {
   );
 }
 
+export function RtEmotionSummary({ record }: { record: ThoughtRecord }) {
+  const before = record.emotions[0];
+  if (!before) return null;
+  const now = record.emotionNow;
+  const text = !now
+    ? `${before.emotion} ${before.before}`
+    : now.emotion === before.emotion
+      ? `${before.emotion} ${before.before} → ${now.strength}`
+      : `${before.emotion} ${before.before} → ${now.emotion} ${now.strength}`;
+  return (
+    <span className="inline-flex items-baseline rounded-full bg-sage-soft px-2.5 py-1 text-xs font-medium text-sage-deep dark:bg-night-surface dark:text-sage">
+      {text}
+    </span>
+  );
+}
+
 export type RecordCardTarget = 'wizard' | 'detail';
 
 export function RecordCard({

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import type { ThoughtRecord } from '../lib/types';
+import type { ThoughtRecord, WorksheetFormat } from '../lib/types';
 import type { WizardMode } from '../lib/wizard';
-import { getRecord, getSetting, newRecord } from '../lib/repository';
+import { getRecord, getSetting, getWorksheetFormat, newRecord } from '../lib/repository';
 import Wizard from './Wizard';
 
 export default function WizardScreen({ mode }: { mode: WizardMode }) {
@@ -17,7 +17,7 @@ export default function WizardScreen({ mode }: { mode: WizardMode }) {
 
   useEffect(() => {
     if (mode === 'new') {
-      setRecord(newRecord('classic'));
+      void getWorksheetFormat().then((format: WorksheetFormat) => setRecord(newRecord(format)));
       return;
     }
     const n = Number(id);

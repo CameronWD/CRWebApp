@@ -20,6 +20,10 @@ import DistortionsStep from './steps/DistortionsStep';
 import BalancedStep from './steps/BalancedStep';
 import RerateStep from './steps/RerateStep';
 import DoneStep from './steps/DoneStep';
+import NegativeThoughtStep from './steps/NegativeThoughtStep';
+import EmotionBeforeStep from './steps/EmotionBeforeStep';
+import AlternativeStep from './steps/AlternativeStep';
+import EmotionNowStep from './steps/EmotionNowStep';
 
 export default function Wizard({
   initialRecord,
@@ -115,6 +119,10 @@ export default function Wizard({
             {step === 'distortions' && <DistortionsStep record={state.record} dispatch={dispatch} />}
             {step === 'balanced' && <BalancedStep record={state.record} dispatch={dispatch} />}
             {step === 'rerate' && <RerateStep record={state.record} dispatch={dispatch} />}
+            {step === 'negativeThought' && <NegativeThoughtStep record={state.record} dispatch={dispatch} />}
+            {step === 'emotionBefore' && <EmotionBeforeStep record={state.record} dispatch={dispatch} />}
+            {step === 'alternative' && <AlternativeStep record={state.record} dispatch={dispatch} />}
+            {step === 'emotionNow' && <EmotionNowStep record={state.record} dispatch={dispatch} />}
             {step === 'done' && <DoneStep record={state.record} onFinish={() => navigate('/')} />}
         </div>
       </div>
