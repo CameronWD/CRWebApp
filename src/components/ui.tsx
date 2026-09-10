@@ -230,7 +230,7 @@ export function ConfirmSheet({
             animate={{ y: 0, opacity: 1 }}
             exit={reduceMotion ? { opacity: 0 } : { y: 80, opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="w-full max-w-md rounded-t-3xl bg-paper p-6 pb-10 dark:bg-night-bg"
+            className="w-full max-w-md rounded-t-3xl bg-paper p-6 pb-10 dark:bg-night-bg max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-display text-xl font-medium">{title}</h3>
@@ -278,7 +278,7 @@ export function InfoSheet({
             role="dialog"
             aria-modal="true"
             aria-label={help.title}
-            className="w-full max-w-md rounded-t-3xl bg-paper p-6 pb-10 dark:bg-night-bg"
+            className="w-full max-w-md rounded-t-3xl bg-paper p-6 pb-10 dark:bg-night-bg max-h-[85vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-display text-xl font-medium">{help.title}</h3>
