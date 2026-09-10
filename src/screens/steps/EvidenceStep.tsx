@@ -1,7 +1,7 @@
 import type { Dispatch } from 'react';
 import type { ThoughtRecord } from '../../lib/types';
 import type { WizardAction } from '../../lib/wizard';
-import { hotThought } from '../../lib/repository';
+import { activeThought } from '../../lib/repository';
 import { AutoTextArea, StepShell } from '../../components/ui';
 
 export default function EvidenceStep({
@@ -14,9 +14,19 @@ export default function EvidenceStep({
   kind: 'for' | 'against';
 }) {
   const field = kind === 'for' ? 'evidenceFor' : 'evidenceAgainst';
+  const rt = record.format === 'realistic';
   return (
     <StepShell
-      title={kind === 'for' ? 'What makes this thought feel true?' : "What doesn't fit that thought?"}
+      kicker={rt ? 'Gathering the evidence' : undefined}
+      title={
+        rt
+          ? kind === 'for'
+            ? 'Evidence for the thought'
+            : 'Evidence against the thought'
+          : kind === 'for'
+            ? 'What makes this thought feel true?'
+            : "What doesn't fit that thought?"
+      }
       subtitle={
         kind === 'for'
           ? 'Facts only, not feelings. It’s okay if there are some.'
@@ -24,7 +34,7 @@ export default function EvidenceStep({
       }
     >
       <blockquote className="rounded-2xl border-l-4 border-sage bg-sage-soft/60 p-4 text-sm italic leading-relaxed dark:border-sage dark:bg-night-surface">
-        “{hotThought(record)}”
+        “{activeThought(record)}”
       </blockquote>
       <AutoTextArea
         value={record[field]}

@@ -118,10 +118,12 @@ export function ProgressDots({ current, total }: { current: number; total: numbe
 export function StepShell({
   title,
   subtitle,
+  kicker,
   children,
 }: {
   title: string;
   subtitle?: string;
+  kicker?: string;
   children?: ReactNode;
 }) {
   const reduceMotion = useReducedMotion();
@@ -134,6 +136,9 @@ export function StepShell({
       className="flex flex-col gap-5 pb-6"
     >
       <div>
+        {kicker && (
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-mist dark:text-night-mist">{kicker}</p>
+        )}
         <h2 className="font-display text-2xl font-medium">{title}</h2>
         {subtitle && <p className="mt-1.5 text-sm leading-relaxed text-mist dark:text-night-mist">{subtitle}</p>}
       </div>
