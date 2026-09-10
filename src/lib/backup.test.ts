@@ -17,7 +17,7 @@ describe('backup round trip', () => {
     await addCustomEmotion('Restless');
     const backup = await createBackup();
     expect(backup.app).toBe('thought-records');
-    expect(backup.version).toBe(1);
+    expect(backup.version).toBe(2);
     expect(backup.records).toHaveLength(1);
     expect(backup.customEmotions).toHaveLength(1);
     expect(backup.exportedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
@@ -31,7 +31,7 @@ describe('backup round trip', () => {
     incoming.situation = 'restored';
     await restoreBackup({
       app: 'thought-records',
-      version: 1,
+      version: 2,
       exportedAt: '2026-09-01T00:00:00.000Z',
       records: [{ ...incoming, id: 42 }],
       customEmotions: [{ id: 1, name: 'Restless' }],
@@ -46,7 +46,7 @@ describe('backup round trip', () => {
   test('parseBackup accepts its own output', async () => {
     const backup = await createBackup();
     const parsed = parseBackup(JSON.stringify(backup));
-    expect(parsed.version).toBe(1);
+    expect(parsed.version).toBe(2);
   });
 });
 
@@ -233,5 +233,52 @@ describe('shouldNudgeExport', () => {
   });
   test('stale export but nothing new since → no nudge', () => {
     expect(shouldNudgeExport('2026-08-01T00:00:00.000Z', '2026-07-20T00:00:00.000Z', now)).toBe(false);
+  });
+});
+
+describe('backup v2', () => {
+  test('createBackup emits version 2', async () => {
+    const b = await createBackup();
+    expect(b.version).toBe(2);
+  });
+
+  test('a version-1 backup still parses and its records become classic', () => {
+    const legacyRecord = {
+      status: 'completed', createdAt: 'a', updatedAt: 'b', completedAt: 'c',
+      situation: 's', emotions: [], thoughts: [], evidenceFor: '', evidenceAgainst: '',
+      distortions: [], balancedThought: '',
+    };
+    const parsed = parseBackup(JSON.stringify({
+      app: 'thought-records', version: 1, exportedAt: 'x',
+      records: [legacyRecord], customEmotions: [],
+    }));
+    expect(parsed.version).toBe(2);
+    expect(parsed.records[0].format).toBe('classic');
+    expect(parsed.records[0].emotionNow).toBeNull();
+  });
+
+  test('a version-2 backup validates the realistic fields', () => {
+    const base = {
+      status: 'open', createdAt: 'a', updatedAt: 'b', completedAt: null,
+      situation: 's', emotions: [], thoughts: [], evidenceFor: '', evidenceAgainst: '',
+      distortions: [], balancedThought: '',
+      format: 'realistic', negativeThought: 'nt', beliefBefore: 50,
+      alternativeThought: '', beliefAfter: null, emotionNow: null,
+    };
+    const wrap = (record: unknown) => JSON.stringify({
+      app: 'thought-records', version: 2, exportedAt: 'x', records: [record], customEmotions: [],
+    });
+    expect(parseBackup(wrap(base)).records[0].format).toBe('realistic');
+    expect(() => parseBackup(wrap({ ...base, format: 'weird' }))).toThrow();
+    expect(() => parseBackup(wrap({ ...base, beliefBefore: 'high' }))).toThrow();
+    expect(() => parseBackup(wrap({ ...base, emotionNow: { emotion: 'Calm' } }))).toThrow();
+    expect(parseBackup(wrap({ ...base, emotionNow: { emotion: 'Calm', strength: 20 } })).records[0].emotionNow)
+      .toEqual({ emotion: 'Calm', strength: 20 });
+  });
+
+  test('unknown versions are rejected', () => {
+    expect(() => parseBackup(JSON.stringify({
+      app: 'thought-records', version: 3, exportedAt: 'x', records: [], customEmotions: [],
+    }))).toThrow();
   });
 });

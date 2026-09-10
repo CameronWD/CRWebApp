@@ -51,7 +51,7 @@ test('importing a valid backup replaces existing data and shows confirmation', a
   incoming.situation = 'restored';
   const backup: BackupFile = {
     app: 'thought-records',
-    version: 1,
+    version: 2,
     exportedAt: '2026-09-01T00:00:00.000Z',
     records: [incoming],
     customEmotions: [],

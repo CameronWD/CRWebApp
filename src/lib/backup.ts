@@ -1,10 +1,11 @@
 import { db } from './db';
+import { withFormatDefaults, type StoredRecord } from './migrate';
 import { getSetting, setSetting } from './repository';
 import type { CustomEmotion, ThoughtRecord } from './types';
 
 export interface BackupFile {
   app: 'thought-records';
-  version: 1;
+  version: 2;
   exportedAt: string;
   records: ThoughtRecord[];
   customEmotions: CustomEmotion[];
@@ -16,7 +17,7 @@ const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
 export async function createBackup(): Promise<BackupFile> {
   return {
     app: 'thought-records',
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     records: await db.records.toArray(),
     customEmotions: await db.customEmotions.toArray(),
@@ -42,7 +43,21 @@ function isValidThought(value: unknown): boolean {
   return true;
 }
 
-function isValidRecord(value: unknown): boolean {
+function isValidFormatFields(value: Record<string, unknown>): boolean {
+  if (value.format !== 'realistic' && value.format !== 'classic') return false;
+  if (typeof value.negativeThought !== 'string') return false;
+  if (typeof value.alternativeThought !== 'string') return false;
+  if (value.beliefBefore !== null && typeof value.beliefBefore !== 'number') return false;
+  if (value.beliefAfter !== null && typeof value.beliefAfter !== 'number') return false;
+  const now = value.emotionNow;
+  if (now !== null) {
+    if (!isObject(now)) return false;
+    if (typeof now.emotion !== 'string' || typeof now.strength !== 'number') return false;
+  }
+  return true;
+}
+
+function isValidRecord(value: unknown, version: 1 | 2): boolean {
   if (!isObject(value)) return false;
   if (value.status !== 'open' && value.status !== 'completed') return false;
   if (typeof value.situation !== 'string') return false;
@@ -56,6 +71,7 @@ function isValidRecord(value: unknown): boolean {
   if (!Array.isArray(value.distortions) || !value.distortions.every((d) => typeof d === 'string')) return false;
   if (value.completedAt !== null && typeof value.completedAt !== 'string') return false;
   if ('id' in value && typeof value.id !== 'number') return false;
+  if (version === 2 && !isValidFormatFields(value)) return false;
   return true;
 }
 
@@ -76,11 +92,18 @@ export function parseBackup(json: string): BackupFile {
   }
   if (typeof data !== 'object' || data === null) throw fail();
   const d = data as Record<string, unknown>;
-  if (d.app !== 'thought-records' || d.version !== 1) throw fail();
+  if (d.app !== 'thought-records' || (d.version !== 1 && d.version !== 2)) throw fail();
+  const version = d.version as 1 | 2;
   if (!Array.isArray(d.records) || !Array.isArray(d.customEmotions)) throw fail();
-  if (!d.records.every(isValidRecord)) throw fail();
+  if (!d.records.every((r) => isValidRecord(r, version))) throw fail();
   if (!d.customEmotions.every(isValidCustomEmotion)) throw fail();
-  return data as BackupFile;
+  return {
+    app: 'thought-records',
+    version: 2,
+    exportedAt: d.exportedAt as string,
+    records: (d.records as StoredRecord[]).map(withFormatDefaults),
+    customEmotions: d.customEmotions as CustomEmotion[],
+  };
 }
 
 export async function restoreBackup(backup: BackupFile): Promise<void> {
