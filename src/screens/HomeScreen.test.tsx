@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { HashRouter } from 'react-router-dom';
 import { beforeEach, expect, test, vi } from 'vitest';
 import { db } from '../lib/db';
@@ -90,6 +90,22 @@ test('To finish cards link to the completion wizard, and See all appears when th
 
   const seeAll = screen.getByRole('link', { name: 'See all' });
   expect(seeAll).toHaveAttribute('href', '#/records');
+});
+
+test('deleting an open record from its card removes it from the list', async () => {
+  const r = newRecord('classic');
+  r.situation = 'Overdue apology';
+  await saveRecord(r);
+  renderHome();
+
+  await screen.findByText(/Overdue apology/);
+  const del = await screen.findByRole('button', { name: 'Delete record' });
+  fireEvent.click(del);
+  const sheetConfirm = screen.getAllByRole('button', { name: 'Delete record' })[1];
+  fireEvent.click(sheetConfirm);
+  await waitFor(() => {
+    expect(screen.queryByText(/Overdue apology/)).not.toBeInTheDocument();
+  });
 });
 
 test('anchors scroll to the bottom once both open and completed records have loaded', async () => {
